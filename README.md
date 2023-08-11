@@ -1,6 +1,6 @@
 # NODE API TEMPLATE
 
-1. Install all the dependencies at package.json by running "yarn" or "npm"
+1. Install all the dependencies at package.json by running "yarn"
 
 2. Create a ".env" file and copy and paste this:
 
@@ -49,4 +49,3 @@ yarn migration
 ```
 
 5. Have fun!
-# node-api-template
