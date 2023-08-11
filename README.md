@@ -15,7 +15,8 @@ Acessos:
   - Eduardo Teles (edot) - Desenvolvedor e designer
   - Josef Jaeger () - Desenvolvedor
 
-# HOW TO RUN
+
+# How to run
 
 1. Install all the dependencies at package.json by running "yarn"
 
