@@ -5,8 +5,7 @@ O nosso produto trará uma centralização e organização de todas as informaç
 Os usuários da pelada poderão apenas visualizar informações importantes, como estatísticas mensais e anuais, times sorteados de cada semana, entre outras coisas.
 
 Acessos:
-  - login: admin@fute.com.br
-  - senha: testPassword@
+  - Clickup https://app.clickup.com/9010156395/v/s/90100401129
 
 # Time:
   - Guilherme Ribeiro (grcc) - Gerente do projeto *Líder
