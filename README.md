@@ -6,13 +6,14 @@ Os usuários da pelada poderão apenas visualizar informações importantes, com
 
 Acessos:
   - Clickup https://app.clickup.com/9010156395/v/s/90100401129
+No clickup é possível encontrar: atividades do projeto, backlog do produto com histórias do usuário, link para o protótipo inicial no figma, design e arquitetura do software, documentação dos testes criados, modelo ER, especificações técnicas e documento de postmortem do primeiro ciclo do projeto
 
 # Time:
   - Guilherme Ribeiro (grcc) - Gerente do projeto *Líder
   - Luca Neves (lnb2) - Líder tećnico
   - Breno Alexandre Santos (baas) - Desenvolvedor
   - Eduardo Teles (edot) - Desenvolvedor e designer
-  - Josef Jaeger () - Desenvolvedor
+  - Josef Jaeger (jjb) - Desenvolvedor
 
 
 # How to run
