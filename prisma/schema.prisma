@@ -8,15 +8,15 @@ generator client {
 }
 
 model Footy {
-  id         String       @id @default(uuid())
-  created_at DateTime     @default(now())
-  updated_at DateTime     @updatedAt
-  email      String       @unique
-  name       String
-  password   String
-  location   String
-  players    Player[]
-  FootyEvent FootyEvent[]
+  id          String       @id @default(uuid())
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+  email       String       @unique
+  name        String
+  password    String
+  location    String
+  players     Player[]
+  footy_event FootyEvent[]
 
   @@map("footy")
 }
