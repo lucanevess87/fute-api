@@ -1,38 +1,16 @@
-## What I did
+## O que eu fiz
 
-- Thing I’ve done
-- Thing I’ve done
-  - Detailing
-  - Detailing
+- O que fiz
+  - Detalhes
 
-## How to test
+## Como testar
 
-1. Open the terminal and go to the folder of this project
-
-1. In terminal:
-   1. `git checkout develop`
-   1. `git pull`
-   1. `git checkout <branch name>`
-   1. `git pull origin <branch name>`
+1. No terminal:
+   1. `gi fetch`
+   1. `git checkout <branch_name>`
    1. `yarn install`
-   1. `code .`
    1. `sudo docker-compose up`
    1. `yarn test`
-   
-2. In your browser go to http://localhost:3001/<route>
+2. No navegador abrir http://localhost:3001/<route>
 
-3. In VScode open `<relative path>`
-
-4. Things to do during the code:
-
-   - Open insomnia and postbird to test the requisitions needed
-
-5. Read the changed files section on GitHub
-
-6. Test the things that you think are worth testing, even the ones that are not in this description
-
-&nbsp;
-
----
-
-**Time spent:** <see your time spent on https://clockify.me/tracker >
+3. Teste os requests no Insomnia
