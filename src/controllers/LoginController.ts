@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { compare } from 'bcryptjs';
 
 import {
-  UserRepository,
+  FootyRepository,
   TokenRepository,
   clearCookies,
   setCookie,
@@ -13,7 +13,7 @@ class LoginController {
     try {
       const { email, password } = req.body;
 
-      const user = await UserRepository.findByEmail(email);
+      const user = await FootyRepository.findByEmail(email);
 
       if (!user) {
         return next({
@@ -82,7 +82,7 @@ class LoginController {
         });
       }
 
-      const user = await UserRepository.findById(decodedRefreshToken.id);
+      const user = await FootyRepository.findById(decodedRefreshToken.id);
 
       if (!user) {
         return next({

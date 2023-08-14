@@ -1,11 +1,10 @@
 import { Router } from 'express';
-
-import UserRouter from './UserRoutes';
+import FootyRouter from './FootyRoutes';
 import AuthRouter from './AuthRoutes';
 
 const router = Router();
 
-router.use('/user', UserRouter);
+router.use('/footy', FootyRouter);
 router.use('/sessions', AuthRouter);
 router.route('/').get((req, res) => {
   res.send('Hello World!');

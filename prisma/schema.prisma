@@ -7,10 +7,47 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id       String  @id @default(uuid())
-  name     String
-  phone    String?
-  email    String  @unique
-  password String
+model Footy {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  name       String
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  location   String
+  teams      Team[]
+  players    Player[]
+
+  @@map("footy")
+}
+
+model Team {
+  id         String   @id @default(uuid())
+  footyId    String
+  name       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  players    Player[]
+
+  Footy Footy? @relation(fields: [footyId], references: [id])
+
+  @@map("team")
+}
+
+model Player {
+  id         String   @id @default(uuid())
+  footy_id   String
+  team_id    String
+  name       String
+  starts     Int
+  goals      Int?
+  assists    Int?
+  type       String
+  create_at  DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  Footy Footy? @relation(fields: [footy_id], references: [id])
+  Team  Team?  @relation(fields: [team_id], references: [id])
+
+  @@map("player")
 }
