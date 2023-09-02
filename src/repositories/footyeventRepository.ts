@@ -1,7 +1,7 @@
 import prisma from '@database/client';
 import { Prisma, FootyEvent } from '@prisma/client';
 
-class EventRepository {
+class FootyEventRepository {
     async create(data: Prisma.FootyEventCreateInput): Promise<FootyEvent> {
         const event = await prisma.footyEvent.create({ data });
         return event;
@@ -28,4 +28,5 @@ class EventRepository {
     }
 }
 
-export default new EventRepository();
+export default new FootyEventRepository();
+

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import FootyRouter from './FootyRoutes';
 import AuthRouter from './AuthRoutes';
+import FootyEventRoutes from './FootyEventRoutes';
 
 const router = Router();
 
