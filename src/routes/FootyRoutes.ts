@@ -14,18 +14,18 @@ footyRouter.route('/')
     FootyController.readAll,
   );
 
-footyRouter.route('/:userId')
+footyRouter.route('/:id')
   .get(
     FootyController.read,
   );
 
-footyRouter.route('/:userId')
+footyRouter.route('/:id')
   .patch(
     [auth],
     FootyController.update,
   );
 
-footyRouter.route('/:userId')
+footyRouter.route('/:id')
   .delete(
     [auth],
     FootyController.delete,
