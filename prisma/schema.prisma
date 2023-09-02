@@ -4,50 +4,66 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 model Footy {
-  id         String   @id @default(uuid())
-  email      String   @unique
-  name       String
-  password   String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  location   String
-  teams      Team[]
-  players    Player[]
+  id          String       @id @default(uuid())
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+  email       String       @unique
+  name        String
+  password    String
+  location    String
+  players     Player[]
+  footy_event FootyEvent[]
 
   @@map("footy")
 }
 
-model Team {
+model FootyEvent {
   id         String   @id @default(uuid())
-  footyId    String
-  name       String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  players    Player[]
+  footy_id   String
+  teams      Team[]
+  Footy      Footy    @relation(fields: [footy_id], references: [id])
 
-  Footy Footy? @relation(fields: [footyId], references: [id])
+  @@map("footy_event")
+}
+
+model Team {
+  id             String     @id @default(uuid())
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @updatedAt
+  footy_event_id String
+  name           String
+  victories      Int
+  players        Player[]
+  FootyEvent     FootyEvent @relation(fields: [footy_event_id], references: [id])
 
   @@map("team")
 }
 
 model Player {
-  id         String   @id @default(uuid())
+  id         String     @id @default(uuid())
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
   footy_id   String
-  team_id    String
+  team_id    String?
   name       String
   starts     Int
   goals      Int?
   assists    Int?
-  type       String
-  create_at  DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  Footy Footy? @relation(fields: [footy_id], references: [id])
-  Team  Team?  @relation(fields: [team_id], references: [id])
+  type       PlayerType
+  Footy      Footy      @relation(fields: [footy_id], references: [id])
+  Team       Team?      @relation(fields: [team_id], references: [id])
 
   @@map("player")
+}
+
+enum PlayerType {
+  mensalist
+  diarist
 }

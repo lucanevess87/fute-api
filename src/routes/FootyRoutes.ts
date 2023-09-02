@@ -9,6 +9,11 @@ footyRouter.route('/')
     FootyController.create,
   );
 
+footyRouter.route('/')
+  .get(
+    FootyController.readAll,
+  );
+
 footyRouter.route('/:userId')
   .get(
     FootyController.read,
