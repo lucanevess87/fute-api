@@ -1,7 +1,7 @@
-import UserController from './UserController';
+import FootyController from './FootyController';
 import LoginController from './LoginController';
 
 export {
-  UserController,
+  FootyController,
   LoginController,
 };
