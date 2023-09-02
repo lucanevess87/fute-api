@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { hash } from 'bcryptjs';
-import { UserRepository } from '../repositories';
-import { User, UpdateUser } from '../DTOs';
+import { FootyRepository } from '../repositories';
+import { UpdateUser } from '../DTOs';
 
-class UserController {
+class FootyController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const userData = User.parse(req.body);
+      const userData = req.body;
 
-      const existsUserWithEmail = await UserRepository.findByEmail(
+      const existsUserWithEmail = await FootyRepository.findByEmail(
         userData.email,
       );
 
@@ -24,7 +24,7 @@ class UserController {
         password: await hash(userData.password, 6),
       };
 
-      const user = await UserRepository.create(userDataWithHashedPassword);
+      const user = await FootyRepository.create(userDataWithHashedPassword);
 
       res.locals = {
         status: 201,
@@ -38,11 +38,26 @@ class UserController {
     }
   }
 
+  async readAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const footies = await FootyRepository.findAll();
+
+      res.locals = {
+        status: 200,
+        data: footies,
+      };
+
+      return next();
+    } catch (error) {
+      return next(error);
+    }
+  }
+
   async read(req: Request, res: Response, next: NextFunction) {
     try {
       const { userId } = req.params;
 
-      const user = await UserRepository.findById(userId);
+      const user = await FootyRepository.findById(userId);
 
       if (!user) {
         return next({
@@ -67,7 +82,7 @@ class UserController {
       const { userId } = req.params;
       const userData = UpdateUser.parse(req.body);
 
-      const user = await UserRepository.update(userId, userData);
+      const user = await FootyRepository.update(userId, userData);
 
       if (!user) {
         return next({
@@ -92,7 +107,7 @@ class UserController {
     try {
       const { userId } = req.params;
 
-      const user = await UserRepository.delete(userId);
+      const user = await FootyRepository.delete(userId);
 
       if (!user) {
         return next({
@@ -113,4 +128,4 @@ class UserController {
   }
 }
 
-export default new UserController();
+export default new FootyController();

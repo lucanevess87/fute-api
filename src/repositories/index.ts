@@ -1,5 +1,5 @@
-import UserRepository from './userRepository';
+import FootyRepository from './footyRepository';
 import TokenRepository from './tokenRepository';
 import { setCookie, clearCookies } from './cookieRepository';
 
-export { UserRepository, TokenRepository, setCookie, clearCookies };
+export { FootyRepository, TokenRepository, setCookie, clearCookies };
