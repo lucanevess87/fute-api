@@ -38,6 +38,21 @@ class FootyController {
     }
   }
 
+  async readAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const footies = await FootyRepository.findAll();
+
+      res.locals = {
+        status: 200,
+        data: footies,
+      };
+
+      return next();
+    } catch (error) {
+      return next(error);
+    }
+  }
+
   async read(req: Request, res: Response, next: NextFunction) {
     try {
       const { userId } = req.params;
