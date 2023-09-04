@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import auth from '../middlewares/auth';
 import { PlayerController } from '../controllers';
+import auth from '../middlewares/auth';
 
 const playerRouter = Router();
 

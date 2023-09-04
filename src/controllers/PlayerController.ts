@@ -1,5 +1,5 @@
+import { PlayerRepository } from '@repositories/index';
 import { Request, Response, NextFunction } from 'express';
-import { PlayerRepository } from '../repositories';
 
  class PlayerController {
   async create(req: Request, res: Response, next: NextFunction) {
@@ -24,10 +24,14 @@ import { PlayerRepository } from '../repositories';
     try {
       const players = await PlayerRepository.findAll();
 
+      console.count('readAll');
+      console.log(players);
+
       res.locals = {
         status: 200,
         data: players,
       };
+
       return next();
     } catch (error) {
       return next(error);
