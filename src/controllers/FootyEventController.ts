@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import { footyeventRepository } from '../repositories';
+import { FootyeventRepository } from '../repositories';
 
 class FootyEventController {
     async create(req: Request, res: Response) {
         try {
             const eventData = req.body;
-            const event = await footyeventRepository.create(eventData);
+            const event = await FootyeventRepository.create(eventData);
             return res.status(201).json(event);
         } catch (error) {
             return res.status(400).json({ error: 'Dados inválidos' });
@@ -14,7 +14,7 @@ class FootyEventController {
 
     async readAll(req: Request, res: Response) {
         try {
-            const events = await footyeventRepository.findAll();
+            const events = await FootyeventRepository.findAll();
             return res.status(200).json(events);
         } catch (error) {
             return res.status(500).json({ error: 'Erro ao buscar eventos específicos de pelada.' });
@@ -25,7 +25,7 @@ class FootyEventController {
         const { eventId } = req.params;
 
         try {
-            const event = await footyeventRepository.findById(eventId);
+            const event = await FootyeventRepository.findById(eventId);
             if (!event) {
                 return res.status(404).json({ error: 'Evento específico de pelada não encontrado.' });
             }
@@ -40,7 +40,7 @@ class FootyEventController {
         const eventData = req.body;
 
         try {
-            const updatedEvent = await footyeventRepository.update(eventId, eventData);
+            const updatedEvent = await FootyeventRepository.update(eventId, eventData);
             return res.status(200).json(updatedEvent);
         } catch (error) {
             return res.status(500).json({ error: 'Erro ao atualizar o evento específico de pelada.' });
@@ -51,7 +51,7 @@ class FootyEventController {
         const { eventId } = req.params;
 
         try {
-            const deletedEvent = await footyeventRepository.delete(eventId);
+            const deletedEvent = await FootyeventRepository.delete(eventId);
             return res.status(200).json(deletedEvent);
         } catch (error) {
             return res.status(500).json({ error: 'Erro ao excluir o evento específico de pelada.' });

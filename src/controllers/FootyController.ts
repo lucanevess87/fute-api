@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { hash } from 'bcryptjs';
 import { FootyRepository } from '../repositories';
-import { UpdateUser as UpdateFooty } from '../DTOs';
 
 class FootyController {
   async create(req: Request, res: Response, next: NextFunction) {
@@ -32,7 +31,7 @@ class FootyController {
         data: footy,
       };
 
-      return next();
+      return next({  });
     } catch (error) {
       return next(error);
     }
@@ -80,7 +79,7 @@ class FootyController {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const data = UpdateFooty.parse(req.body);
+      const data = req.body;
 
       const footy = await FootyRepository.update(id, data);
 

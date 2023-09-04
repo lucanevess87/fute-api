@@ -1,6 +1,8 @@
+
 import FootyRepository from './footyRepository';
 import TokenRepository from './tokenRepository';
-import footyeventRepository from './footyeventRepository';
+import PlayerRepository from './playerRepository';
+import FootyeventRepository from './footyeventRepository';
 import { setCookie, clearCookies } from './cookieRepository';
 
-export { FootyRepository, footyeventRepository, TokenRepository, setCookie, clearCookies };
+export { FootyRepository, FootyeventRepository, PlayerRepository, TokenRepository, setCookie, clearCookies };
