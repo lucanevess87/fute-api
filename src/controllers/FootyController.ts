@@ -1,35 +1,35 @@
 import { Request, Response, NextFunction } from 'express';
 import { hash } from 'bcryptjs';
 import { FootyRepository } from '../repositories';
-import { UpdateUser } from '../DTOs';
+import { UpdateUser as UpdateFooty } from '../DTOs';
 
 class FootyController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const userData = req.body;
+      const data = req.body;
 
-      const existsUserWithEmail = await FootyRepository.findByEmail(
-        userData.email,
+      const existsFootyWithEmail = await FootyRepository.findByEmail(
+        data.email,
       );
 
-      if (existsUserWithEmail) {
+      if (existsFootyWithEmail) {
         return next({
           status: 400,
           message: 'This email is already registred',
         });
       }
 
-      const userDataWithHashedPassword = {
-        ...userData,
-        password: await hash(userData.password, 6),
+      const dataWithHashedPassword = {
+        ...data,
+        password: await hash(data.password, 6),
       };
 
-      const user = await FootyRepository.create(userDataWithHashedPassword);
+      const footy = await FootyRepository.create(dataWithHashedPassword);
 
       res.locals = {
         status: 201,
-        message: 'User created',
-        data: user,
+        message: 'Footy created',
+        data: footy,
       };
 
       return next();
@@ -55,20 +55,20 @@ class FootyController {
 
   async read(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId } = req.params;
+      const { id } = req.params;
 
-      const user = await FootyRepository.findById(userId);
+      const footy = await FootyRepository.findById(id);
 
-      if (!user) {
+      if (!footy) {
         return next({
           status: 404,
-          message: 'User not found',
+          message: 'Footy not found',
         });
       }
 
       res.locals = {
         status: 200,
-        data: user,
+        data: footy,
       };
 
       return next();
@@ -79,22 +79,22 @@ class FootyController {
 
   async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId } = req.params;
-      const userData = UpdateUser.parse(req.body);
+      const { id } = req.params;
+      const data = UpdateFooty.parse(req.body);
 
-      const user = await FootyRepository.update(userId, userData);
+      const footy = await FootyRepository.update(id, data);
 
-      if (!user) {
+      if (!footy) {
         return next({
           status: 404,
-          message: 'User not found',
+          message: 'Footy not found',
         });
       }
 
       res.locals = {
         status: 200,
-        data: user,
-        message: 'User updated',
+        data: footy,
+        message: 'Footy updated',
       };
 
       return next();
@@ -105,20 +105,20 @@ class FootyController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId } = req.params;
+      const { id } = req.params;
 
-      const user = await FootyRepository.delete(userId);
+      const footy = await FootyRepository.delete(id);
 
-      if (!user) {
+      if (!footy) {
         return next({
           status: 404,
-          message: 'User not found',
+          message: 'Footy not found',
         });
       }
 
       res.locals = {
         status: 200,
-        message: 'User deleted',
+        message: 'Footy deleted',
       };
 
       return next();
