@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { footyeventRepository } from '../repositories';
 
-class FootyEventController {
+class TeamController {
     async create(req: Request, res: Response) {
         try {
             const eventData = req.body;
@@ -59,4 +59,4 @@ class FootyEventController {
     }
 }
 
-export default new FootyEventController();
+export default new TeamController();
