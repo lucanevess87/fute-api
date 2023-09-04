@@ -1,23 +1,112 @@
 import { Request, Response, NextFunction } from 'express';
-import { hash } from 'bcryptjs';
 import { PlayerRepository } from '../repositories';
-import { UpdateUser } from '../DTOs';
 
  class PlayerController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-        const userData = req.body;
+      const playerData = req.body;
 
-        const existsPlayer = await PlayerRepository.findById(
-            userData.id,
-        );
+      const player = await PlayerRepository.create(playerData);
 
-        if (existsPlayer) {
-          retur next({
-            status: 400,
-            message: 'This player is already registred',
-            });
-        }
+      res.locals = {
+        status: 201,
+        message: 'Player created',
+        data: player,
+      };
+
+      return next();
+    } catch (error) {
+      return next(error);
     }
   }
- }
+
+  async readAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const players = await PlayerRepository.findAll();
+
+      res.locals = {
+        status: 200,
+        data: players,
+      };
+      return next();
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async read(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { playerId } = req.params;
+
+      const player = await PlayerRepository.findById(playerId);
+
+      if (!player) {
+        return next({
+          status: 404,
+          message: 'Player not found'        
+        });
+      }
+
+      res.locals = {
+        status: 200,
+        data: player,
+      };
+
+      return next();
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { playerId } = req.params;
+      const playerData = req.body;
+
+      const player = await PlayerRepository.update(playerId, playerData);
+
+      if (!player) {
+        return next({
+          status: 404,
+          message: 'Player not found',
+        });
+      }
+
+      res.locals = {
+        status: 200,
+        data: player, 
+        message: 'Player updated',
+      };
+
+      return next();
+    } catch (error) {
+      return next(error);
+    }
+  }
+  
+  async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { playerId } = req.params;
+
+      const player = await PlayerRepository.delete(playerId);
+
+      if (!player) {
+        return next({
+          status: 404,
+          message: 'Player no found'
+        });
+      }
+
+      res.locals = {
+        status: 200,
+        message: 'Player deleted'
+      };
+
+      return next();
+    } catch (error) {
+      return next(error);
+    }
+  }
+}
+
+ export default new PlayerController();
