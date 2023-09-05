@@ -7,14 +7,14 @@ class FootyController {
     try {
       const data = req.body;
 
-      const existsFootyWithEmail = await FootyRepository.findByEmail(
-        data.email,
+      const existsFootyWithUsername = await FootyRepository.findByUsername(
+        data.username,
       );
 
-      if (existsFootyWithEmail) {
+      if (existsFootyWithUsername) {
         return next({
           status: 400,
-          message: 'This email is already registred',
+          message: 'This username is already registred',
         });
       }
 

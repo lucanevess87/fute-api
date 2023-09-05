@@ -4,4 +4,8 @@
     "source.fixAll.eslint": true
   },
   "eslint.alwaysShowStatus": true,
+  "cSpell.words": [
+    "footies",
+    "Footyevent"
+  ],
 }
