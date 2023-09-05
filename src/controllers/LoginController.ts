@@ -11,9 +11,9 @@ import {
 class LoginController {
   async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, password } = req.body;
+      const { username, password } = req.body;
 
-      const user = await FootyRepository.findByEmail(email);
+      const user = await FootyRepository.findByUsername(username);
 
       if (!user) {
         return next({

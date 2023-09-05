@@ -7,8 +7,8 @@ class FootyRepository {
     return footy;
   }
 
-  async findByEmail(email: string): Promise<Footy | null> {
-    const footy = await prisma.footy.findUnique({ where: { email } });
+  async findByUsername(id: string): Promise<Footy | null> {
+    const footy = await prisma.footy.findUnique({ where: { id } });
     return footy;
   }
 

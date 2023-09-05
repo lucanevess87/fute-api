@@ -13,6 +13,7 @@ model Footy {
   created_at  DateTime     @default(now())
   updated_at  DateTime     @updatedAt
   email       String       @unique
+  username    String       @unique
   name        String
   password    String
   location    String
