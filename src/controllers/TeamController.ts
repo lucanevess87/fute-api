@@ -1,60 +1,51 @@
 import { Request, Response } from 'express';
-import { FootyeventRepository } from '../repositories';
+import teamRepository from '@repositories/teamRepository';
 
 class TeamController {
     async create(req: Request, res: Response) {
         try {
-            const eventData = req.body;
-            const event = await FootyeventRepository.create(eventData);
-            return res.status(201).json(event);
+            const teamData = req.body;
+            const team = await teamRepository.create(teamData);
+            return res.status(201).json(team);
         } catch (error) {
             return res.status(400).json({ error: 'Dados inválidos' });
         }
     }
 
-    async readAll(req: Request, res: Response) {
-        try {
-            const events = await FootyeventRepository.findAll();
-            return res.status(200).json(events);
-        } catch (error) {
-            return res.status(500).json({ error: 'Erro ao buscar eventos específicos de pelada.' });
-        }
-    }
-
     async read(req: Request, res: Response) {
-        const { eventId } = req.params;
+        const { teamId } = req.params;
 
         try {
-            const event = await FootyeventRepository.findById(eventId);
-            if (!event) {
-                return res.status(404).json({ error: 'Evento específico de pelada não encontrado.' });
+            const team = await teamRepository.findById(teamId);
+            if (!team) {
+                return res.status(404).json({ error: 'Time não encontrado.' });
             }
-            return res.status(200).json(event);
+            return res.status(200).json(team);
         } catch (error) {
-            return res.status(500).json({ error: 'Erro ao buscar o evento específico de pelada.' });
+            return res.status(500).json({ error: 'Erro ao buscar time.' });
         }
     }
 
     async update(req: Request, res: Response) {
-        const { eventId } = req.params;
-        const eventData = req.body;
+        const { teamId } = req.params;
+        const teamData = req.body;
 
         try {
-            const updatedEvent = await FootyeventRepository.update(eventId, eventData);
-            return res.status(200).json(updatedEvent);
+            const updatedTeam = await teamRepository.update(teamId, teamData);
+            return res.status(200).json(updatedTeam);
         } catch (error) {
-            return res.status(500).json({ error: 'Erro ao atualizar o evento específico de pelada.' });
+            return res.status(500).json({ error: 'Erro ao atualizar time.' });
         }
     }
 
     async delete(req: Request, res: Response) {
-        const { eventId } = req.params;
+        const { teamId } = req.params;
 
         try {
-            const deletedEvent = await FootyeventRepository.delete(eventId);
-            return res.status(200).json(deletedEvent);
+            const deletedTeam = await teamRepository.delete(teamId);
+            return res.status(200).json(deletedTeam);
         } catch (error) {
-            return res.status(500).json({ error: 'Erro ao excluir o evento específico de pelada.' });
+            return res.status(500).json({ error: 'Erro ao excluir time.' });
         }
     }
 }
