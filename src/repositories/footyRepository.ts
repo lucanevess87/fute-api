@@ -13,7 +13,7 @@ class FootyRepository {
   }
 
   async findById(id: string): Promise<Footy | null> {
-    const footy = await prisma.footy.findUnique({ where: { id } });
+    const footy = await prisma.footy.findUnique({ where: { id }, include: { players: true, footy_event: true } });
     return footy;
   }
 
@@ -28,8 +28,8 @@ class FootyRepository {
   }
 
   async findAll(): Promise<Footy[]> {
-    const footys = await prisma.footy.findMany();
-    return footys;
+    const footies = await prisma.footy.findMany();
+    return footies;
   }
 
 }
