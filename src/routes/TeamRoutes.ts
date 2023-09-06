@@ -9,11 +9,6 @@ teamRoutes.route('/')
     TeamController.create,
   );
 
-teamRoutes.route('/')
-  .get(
-    TeamController.readAll,
-  );
-
 teamRoutes.route('/:id')
   .get(
     TeamController.read,
