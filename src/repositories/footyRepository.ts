@@ -7,13 +7,24 @@ class FootyRepository {
     return footy;
   }
 
-  async findByUsername(id: string): Promise<Footy | null> {
-    const footy = await prisma.footy.findUnique({ where: { id } });
+  async findByUsername(username: string): Promise<Footy | null> {
+    const footy = await prisma.footy.findUnique({ where: { username }, include: {
+      footy_event: true,
+      players: true,
+    }});
+    return footy;
+  }
+
+  async findByEmail(email: string): Promise<Footy | null> {
+    const footy = await prisma.footy.findUnique({ where: { email }});
     return footy;
   }
 
   async findById(id: string): Promise<Footy | null> {
-    const footy = await prisma.footy.findUnique({ where: { id }, include: { players: true, footy_event: true } });
+    const footy = await prisma.footy.findUnique({ where: { id }, include: { 
+      footy_event: true, 
+      players: true
+    }});
     return footy;
   }
 
@@ -27,8 +38,29 @@ class FootyRepository {
     return footy;
   }
 
-  async findAll(): Promise<Footy[]> {
-    const footies = await prisma.footy.findMany();
+  async findAll({ name }: {name?: string}): Promise<Footy[]> {
+    const query: Prisma.FootyFindManyArgs = {
+      where: {},
+      select: {
+        id: true,
+        created_at: true,
+        updated_at: true,
+        email: true,
+        name: true,
+        username: true,
+        location: true,
+      }
+    }
+
+    if (name !== undefined) {
+      query.where = {
+        username: {
+          contains: name,
+        },
+      };
+    }
+
+    const footies = await prisma.footy.findMany(query);
     return footies;
   }
 

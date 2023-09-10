@@ -13,37 +13,37 @@ class LoginController {
     try {
       const { username, password } = req.body;
 
-      const user = await FootyRepository.findByUsername(username);
+      const footy = await FootyRepository.findByUsername(username);
 
-      if (!user) {
+      if (!footy) {
         return next({
           status: 400,
-          message: 'Invalid credentials.',
+          message: 'Credenciais inválidas',
         });
       }
 
-      const checkPassword = await compare(password, user.password);
+      const checkPassword = await compare(password, footy.password);
 
       if (!checkPassword) {
         return next({
           status: 400,
-          message: 'Invalid credentials.',
+          message: 'Credenciais inválidas',
         });
       }
 
       const tokenRepository = new TokenRepository();
-      const accessToken = tokenRepository.generateAccessToken(user.id, '60s');
-      const refreshToken = tokenRepository.generateRefreshToken(user.id, '5d');
+      const accessToken = tokenRepository.generateAccessToken(footy.id, '60s');
+      const refreshToken = tokenRepository.generateRefreshToken(footy.id, '5d');
 
       setCookie(res, 'refresh_token', refreshToken);
 
-      const { password: _, ...loggedUser } = user;
+      const { password: _,  ...loggedFooty} = footy;
 
       res.locals = {
         status: 200,
-        message: 'User logged',
+        message: 'Logado com successo.',
         data: {
-          loggedUser,
+          loggedFooty,
           accessToken,
         },
       };
@@ -58,14 +58,12 @@ class LoginController {
     try {
       const refreshToken = req.cookies.refresh_token;
 
-      console.log(refreshToken);
-
       if (!refreshToken) {
         delete req.headers.authorization;
 
         return next({
           status: 401,
-          message: 'Invalid token',
+          message: 'Token inválido',
         });
       }
 
@@ -78,37 +76,37 @@ class LoginController {
 
         return next({
           status: 401,
-          message: 'Invalid token',
+          message: 'Token inválido',
         });
       }
 
-      const user = await FootyRepository.findById(decodedRefreshToken.id);
+      const footy = await FootyRepository.findById(decodedRefreshToken.id);
 
-      if (!user) {
+      if (!footy) {
         return next({
           status: 400,
-          message: 'User not found',
+          message: 'Footy não encontrada',
         });
       }
 
       clearCookies(res, 'refresh_token');
 
       const newRefreshToken = tokenRepository.generateRefreshToken(
-        user.id,
+        footy.id,
         '1d',
       );
-      const acessToken = tokenRepository.generateAccessToken(user.id, '30s');
+      const accessToken = tokenRepository.generateAccessToken(footy.id, '30s');
 
       setCookie(res, 'refresh_token', newRefreshToken);
 
-      const { password: _, ...loggedUser } = user;
+      const { password: _, ...loggedUser } = footy;
 
       res.locals = {
         status: 200,
         message: 'Token refreshed',
         data: {
           loggedUser,
-          acessToken,
+          accessToken,
         },
       };
 
@@ -125,7 +123,7 @@ class LoginController {
 
       res.locals = {
         status: 200,
-        message: 'User logged out',
+        message: 'Footy deslogada',
       };
 
       return next();

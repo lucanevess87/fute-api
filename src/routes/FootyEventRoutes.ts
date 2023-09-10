@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import auth from '../middlewares/auth';
-import { FootyEventController } from '../controllers';
+import { FootyController, FootyEventController } from '../controllers';
 
 const eventRouter = Router();
 
@@ -10,25 +10,22 @@ eventRouter.route('/')
         FootyEventController.create,
     );
 
-eventRouter.route('/')
+eventRouter.route('/:id')
     .get(
-        FootyEventController.readAll,
-    );
-
-eventRouter.route('/:eventId')
+        FootyController.read,
+        FootyEventController.readAllByFooty,
+    )
     .get(
         FootyEventController.read,
-    );
-
-eventRouter.route('/:eventId')
+    )
     .patch(
         [auth],
+        FootyEventController.read,
         FootyEventController.update,
-    );
-
-eventRouter.route('/:eventId')
+    )
     .delete(
         [auth],
+        FootyEventController.read,
         FootyEventController.delete,
     );
 

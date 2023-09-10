@@ -22,9 +22,20 @@ class PlayerRepository {
     return player;
   }
 
-  async findAll(): Promise<Player[]> {
+  async findAllByFooty(): Promise<Player[]> {
     const players = await prisma.player.findMany();
     return players;
+  }
+
+  async findAllByEvent(eventId: string): Promise<Player[]> {
+    const players = await prisma.player.findMany({where: {
+      playerFootyEvent: {
+        every: {
+          footy_event_id: eventId,
+        }
+      }
+    }})
+    return players
   }
 
 }

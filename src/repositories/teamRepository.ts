@@ -1,5 +1,6 @@
 import prisma from '@database/client';
 import { Prisma, Team } from '@prisma/client';
+import { TeamResponse } from 'src/types';
 
 class TeamRepository {
   async create(data: Prisma.TeamCreateInput): Promise<Team> {
@@ -7,8 +8,15 @@ class TeamRepository {
     return team;
   }
 
-  async findById(id: string): Promise<Team | null> {
-    const team = await prisma.team.findUnique({ where: { id } });
+  async findById(id: string): Promise<TeamResponse | null> {
+    const team = await prisma.team.findUnique({ where: { id }, include: {
+      playerFootyEvent: {
+        include: {
+          player: true,
+          footyEvent: true
+        }
+      }
+    }});
     return team;
   }
 
@@ -23,7 +31,13 @@ class TeamRepository {
   }
 
   async findAll(eventId: string): Promise<Team[]> {
-    const teams = await prisma.team.findMany({where: { footy_event_id: eventId }});
+    const teams = await prisma.team.findMany({where: {
+      playerFootyEvent: {
+        every: {
+          footy_event_id: eventId,
+        }
+      }
+    }});
     return teams;
   }
 

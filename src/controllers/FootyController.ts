@@ -1,37 +1,59 @@
 import { Request, Response, NextFunction } from 'express';
 import { hash } from 'bcryptjs';
+import { Footy } from '@prisma/client';
+import { FootySchema } from '@DTOs/Footy';
 import { FootyRepository } from '../repositories';
 
 class FootyController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = req.body;
+      const data: Footy = req.body;
 
       const existsFootyWithUsername = await FootyRepository.findByUsername(
         data.username,
       );
 
+      const existsFootyWithEmail = await FootyRepository.findByEmail(
+        data.email,
+      )
+
       if (existsFootyWithUsername) {
         return next({
           status: 400,
-          message: 'This username is already registred',
+          message: 'This username is already registered',
         });
       }
 
-      const dataWithHashedPassword = {
+      if (existsFootyWithEmail) {
+        return next({
+          status: 400,
+          message: 'This email is already registered',
+        });
+      }
+
+      const dataWithHashedPassword: Footy = {
         ...data,
         password: await hash(data.password, 6),
       };
 
-      const footy = await FootyRepository.create(dataWithHashedPassword);
+      const dataValidated = FootySchema.safeParse(dataWithHashedPassword)
 
-      res.locals = {
-        status: 201,
-        message: 'Footy created',
-        data: footy,
-      };
+      if (!dataValidated.success) {
+        return next({
+          status: 400,
+          message: dataValidated.error.message,
+        });
+      }
 
-      return next({  });
+    const footy = await FootyRepository.create(dataWithHashedPassword);
+
+    res.locals = {
+      status: 201,
+      message: "Footy criado com sucesso.",
+      data: footy,
+    };
+
+      return next();
     } catch (error) {
       return next(error);
     }
@@ -39,7 +61,8 @@ class FootyController {
 
   async readAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const footies = await FootyRepository.findAll();
+      const { name } = req.params;
+      const footies = await FootyRepository.findAll({name: name as string | undefined});
 
       res.locals = {
         status: 200,
@@ -81,15 +104,17 @@ class FootyController {
       const { id } = req.params;
       const data = req.body;
 
-      const footy = await FootyRepository.update(id, data);
+      const dataValidated = FootySchema.safeParse(data)
 
-      if (!footy) {
+      if (!dataValidated.success) {
         return next({
-          status: 404,
-          message: 'Footy not found',
+          status: 400,
+          message: dataValidated.error.message,
         });
       }
 
+      const footy = await FootyRepository.update(id, data);
+      
       res.locals = {
         status: 200,
         data: footy,
@@ -106,14 +131,7 @@ class FootyController {
     try {
       const { id } = req.params;
 
-      const footy = await FootyRepository.delete(id);
-
-      if (!footy) {
-        return next({
-          status: 404,
-          message: 'Footy not found',
-        });
-      }
+      await FootyRepository.delete(id);
 
       res.locals = {
         status: 200,

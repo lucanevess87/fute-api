@@ -1,60 +1,99 @@
-import { Request, Response } from 'express';
-import { FootyEventRepository } from '../repositories';
+import { NextFunction, Request, Response } from 'express';
+import { FootyEventRepository, FootyRepository } from '../repositories';
 
 class FootyEventController {
-    async create(req: Request, res: Response) {
+    async create(req: Request, res: Response, next: NextFunction) {
         try {
             const eventData = req.body;
-            const event = await FootyEventRepository.create(eventData);
-            return res.status(201).json(event);
-        } catch (error) {
-            return res.status(400).json({ error: 'Dados inválidos' });
-        }
-    }
 
-    async readAll(req: Request, res: Response) {
-        try {
-            const events = await FootyEventRepository.findAll();
-            return res.status(200).json(events);
-        } catch (error) {
-            return res.status(500).json({ error: 'Erro ao buscar eventos específicos de pelada.' });
-        }
-    }
+            const footyId = await FootyRepository.findById(eventData.footyId);
 
-    async read(req: Request, res: Response) {
-        const { eventId } = req.params;
-
-        try {
-            const event = await FootyEventRepository.findById(eventId);
-            if (!event) {
-                return res.status(404).json({ error: 'Evento específico de pelada não encontrado.' });
+            if(!footyId) {
+                return next({
+                    error: 400,
+                    message: "Footy não encontrada"
+                })
             }
-            return res.status(200).json(event);
+
+            // logica do sorteio
+
+            const event = await FootyEventRepository.create(eventData);
+
+            res.locals = {
+                status: 200,
+                message: "Footy evento criado com sucesso",
+                data: event,
+            }
+            return next();
         } catch (error) {
-            return res.status(500).json({ error: 'Erro ao buscar o evento específico de pelada.' });
+            return next(error);
         }
     }
 
-    async update(req: Request, res: Response) {
-        const { eventId } = req.params;
+    async readAllByFooty(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+
+            const events = await FootyEventRepository.findAll(id);
+
+            res.locals = {
+                status: 200,
+                data: events,
+            }
+
+            return next();
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async read(req: Request, res: Response, next: NextFunction) {
+        const { id } = req.params;
+
+        try {
+            const event = await FootyEventRepository.findById(id);
+
+            if (!event) {
+                return next({status: 400, error: 'Evento específico de pelada não encontrado.' });
+            }
+
+            res.locals = {
+                status: 200,
+                data: event,
+            }
+
+            return next()
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async update(req: Request, res: Response, next: NextFunction) {
+        const { id } = req.params;
         const eventData = req.body;
 
         try {
-            const updatedEvent = await FootyEventRepository.update(eventId, eventData);
-            return res.status(200).json(updatedEvent);
+            const updatedEvent = await FootyEventRepository.update(id, eventData);
+
+            res.locals = {
+                status: 200,
+                data: updatedEvent,
+                message: "Evento autalizado"
+            }
+
+            return next();
         } catch (error) {
-            return res.status(500).json({ error: 'Erro ao atualizar o evento específico de pelada.' });
+            return next(error);
         }
     }
 
-    async delete(req: Request, res: Response) {
-        const { eventId } = req.params;
-
+    async delete(req: Request, res: Response, next: NextFunction) {
         try {
-            const deletedEvent = await FootyEventRepository.delete(eventId);
-            return res.status(200).json(deletedEvent);
+            const { id } = req.params;
+            await FootyEventRepository.delete(id);
+            return next()
         } catch (error) {
-            return res.status(500).json({ error: 'Erro ao excluir o evento específico de pelada.' });
+            return next(error);
         }
     }
 }
