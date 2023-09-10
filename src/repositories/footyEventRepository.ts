@@ -1,5 +1,6 @@
 import prisma from '@database/client';
 import { Prisma, FootyEvent } from '@prisma/client';
+import { FootyEventResponse } from 'src/types';
 
 class FootyEventRepository {
     async create(data: Prisma.FootyEventCreateInput): Promise<FootyEvent> {
@@ -7,8 +8,24 @@ class FootyEventRepository {
         return event;
     }
 
-    async findById(id: string): Promise<FootyEvent | null> {
-        const event = await prisma.footyEvent.findUnique({ where: { id } });
+    async findById(id: string): Promise<FootyEventResponse | null> {
+        const event = await prisma.footyEvent.findUnique({ where: { id }, include: {
+            playerFootyEvent: {
+            select: {
+                    team: true,
+                    player: true,
+                    assists: true,
+                    goals: true,
+                    
+                }
+            }
+        }
+        });
+
+        if (!event) {
+            return null; 
+        }
+
         return event;
     }
 
@@ -22,11 +39,10 @@ class FootyEventRepository {
         return event;
     }
 
-    async findAll(): Promise<FootyEvent[]> {
-        const events = await prisma.footyEvent.findMany();
+    async findAll(footyId: string): Promise<FootyEvent[]> {
+        const events = await prisma.footyEvent.findMany({where: {footy_id: footyId}});
         return events;
     }
 }
 
 export default new FootyEventRepository();
-

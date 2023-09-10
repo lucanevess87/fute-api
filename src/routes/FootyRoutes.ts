@@ -17,17 +17,14 @@ footyRouter.route('/')
 footyRouter.route('/:id')
   .get(
     FootyController.read,
-  );
-
-footyRouter.route('/:id')
+  )
   .patch(
     [auth],
-    FootyController.update,
-  );
-
-footyRouter.route('/:id')
+    FootyController.read,
+    FootyController.update)
   .delete(
     [auth],
+    FootyController.read,
     FootyController.delete,
   );
 

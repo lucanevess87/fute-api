@@ -20,6 +20,37 @@ class TeamController {
             if (!team) {
                 return res.status(404).json({ error: 'Time não encontrado.' });
             }
+
+            const response = {
+                id: team.id,
+                name: team.name,
+                victories: team.victories,
+                footy_event_id: team.playerFootyEvent[0].footyEvent.id,
+                players: team.playerFootyEvent.map((playerFootyEvent) => ({
+                    id: playerFootyEvent.player.id,
+                    name: playerFootyEvent.player.name,
+                    footy_id: playerFootyEvent.player.footy_id,
+                    starts: playerFootyEvent.player.starts,
+                    type: playerFootyEvent.player.type,
+                    created_at: playerFootyEvent.player.created_at,
+                    updated_at: playerFootyEvent.player.updated_at,
+                })),
+            };
+
+            return res.status(200).json(response);
+        } catch (error) {
+            return res.status(500).json({ error: 'Erro ao buscar time.' });
+        }
+    }
+
+    async readAll(req: Request, res: Response) {
+        const { eventId } = req.params;
+
+        try {
+            const team = await teamRepository.findAll(eventId);
+            if (!team) {
+                return res.status(404).json({ error: 'Time não encontrado.' });
+            }
             return res.status(200).json(team);
         } catch (error) {
             return res.status(500).json({ error: 'Erro ao buscar time.' });

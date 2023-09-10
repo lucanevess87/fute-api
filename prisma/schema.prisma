@@ -14,16 +14,20 @@ enum PlayerType {
 }
 
 model Footy {
-  id          String       @id @default(uuid())
-  created_at  DateTime     @default(now())
-  updated_at  DateTime     @updatedAt
-  email       String       @unique
-  username    String       @unique
-  name        String
-  password    String
-  location    String
-  players     Player[]
-  footy_event FootyEvent[]
+  id               String       @id @default(uuid())
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @updatedAt
+  email            String       @unique
+  username         String       @unique
+  name             String
+  password         String
+  location         String
+  start_hour       DateTime
+  end_hour         DateTime
+  players_per_team Int?
+  num_of_teams     Int?
+  players          Player[]
+  footy_event      FootyEvent[]
 
   @@map("footy")
 }
@@ -34,7 +38,7 @@ model FootyEvent {
   updated_at       DateTime           @updatedAt
   footy_id         String
   Footy            Footy              @relation(fields: [footy_id], references: [id])
-  PlayerFootyEvent PlayerFootyEvent[]
+  playerFootyEvent PlayerFootyEvent[]
 
   @@map("footy_event")
 }
@@ -45,7 +49,7 @@ model Team {
   updated_at       DateTime           @updatedAt
   name             String
   victories        Int
-  PlayerFootyEvent PlayerFootyEvent[]
+  playerFootyEvent PlayerFootyEvent[]
 
   @@map("team")
 }
@@ -58,8 +62,8 @@ model Player {
   name             String
   starts           Int
   type             PlayerType
-  PlayerFootyEvent PlayerFootyEvent[]
-  Footy            Footy              @relation(fields: [footy_id], references: [id])
+  playerFootyEvent PlayerFootyEvent[]
+  footy            Footy              @relation(fields: [footy_id], references: [id])
 
   @@map("player")
 }
@@ -70,9 +74,9 @@ model PlayerFootyEvent {
   team_id        String
   goals          Int?
   assists        Int?
-  Team           Team       @relation(fields: [team_id], references: [id])
-  FootyEvent     FootyEvent @relation(fields: [footy_event_id], references: [id])
-  Player         Player     @relation(fields: [player_id], references: [id])
+  team           Team       @relation(fields: [team_id], references: [id])
+  footyEvent     FootyEvent @relation(fields: [footy_event_id], references: [id])
+  player         Player     @relation(fields: [player_id], references: [id])
 
   @@unique([footy_event_id, player_id])
   @@index([team_id], name: "idx_team_id")
