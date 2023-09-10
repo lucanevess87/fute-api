@@ -60,7 +60,7 @@ model Player {
   updated_at       DateTime           @updatedAt
   footy_id         String
   name             String
-  starts           Int
+  stars            Int
   type             PlayerType
   playerFootyEvent PlayerFootyEvent[]
   footy            Footy              @relation(fields: [footy_id], references: [id])

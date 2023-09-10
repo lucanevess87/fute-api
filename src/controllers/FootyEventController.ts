@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { DrawTeamsParams, GroupedEvent, GroupedTeam, Team } from 'src/types/FootyEventTypes';
 import { FootyEventRepository, FootyRepository } from '../repositories';
 
 class FootyEventController {
@@ -15,7 +16,39 @@ class FootyEventController {
                 })
             }
 
-            // logica do sorteio
+            const drawTeams = ({players, teamCount, playersPerTeam} : DrawTeamsParams): Team[] => {
+                const sortedPlayers = [...players].sort((a, b) => b.stars - a.stars);
+              
+                const teams: Team[] = Array.from({ length: teamCount }, () => ({
+                  players: [],
+                }));
+              
+                const iterations = Array.from({ length: playersPerTeam });
+              
+                iterations.forEach(() => {
+                  teams.forEach(() => {
+                    if (sortedPlayers.length === 0) return;
+              
+                    const lowestStarTeam = teams.reduce((lowest, currentTeam) => {
+                      const sumStars = currentTeam.players.reduce((sum, p) => sum + p.stars, 0);
+                      return sumStars < lowest.sum ? { team: currentTeam, sum: sumStars } : lowest;
+                    }, { team: teams[0], sum: Infinity }).team;
+              
+                    lowestStarTeam.players.push(sortedPlayers[0]);
+                    sortedPlayers.shift();
+                  });
+                });
+
+                return teams;
+            };
+
+            const sortedTeams = drawTeams({
+                players: eventData.players,
+                playersPerTeam: eventData.playersPerTeam,
+                teamCount: eventData.teamCount
+            })
+
+            console.log(sortedTeams)
 
             const event = await FootyEventRepository.create(eventData);
 
@@ -57,9 +90,40 @@ class FootyEventController {
                 return next({status: 400, error: 'Evento específico de pelada não encontrado.' });
             }
 
+            const groupedEvent: GroupedEvent = {
+                ...event,
+                teams: event.playerFootyEvent.reduce<GroupedTeam[]>((acc, pfe) => {
+                  const teamId = pfe.team.id;
+                  const existingTeam = acc.find(team => team.id === teamId);
+              
+                  if (existingTeam) {
+                    existingTeam.players.push({
+                      player: pfe.player,
+                      assists: pfe.assists ?? 0,
+                      goals: pfe.goals ?? 0,
+                    });
+                  } else {
+                    acc.push({
+                      id: teamId,
+                      name: pfe.team.name,
+                      victories: 0,
+                      players: [
+                        {
+                          player: pfe.player,
+                          assists: pfe.assists ?? 0,
+                          goals: pfe.goals ?? 0,
+                        },
+                      ],
+                    });
+                  }
+              
+                  return acc;
+                }, []),
+              };
+
             res.locals = {
                 status: 200,
-                data: event,
+                data: groupedEvent,
             }
 
             return next()

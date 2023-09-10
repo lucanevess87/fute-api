@@ -1,10 +1,16 @@
-import { PlayerRepository } from '@repositories/index';
+import { FootyRepository, PlayerRepository } from '@repositories/index';
 import { Request, Response, NextFunction } from 'express';
 
  class PlayerController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
       const playerData = req.body;
+
+      const footy = await FootyRepository.findById(playerData.footyId);
+
+      if(!footy) {
+          return next({status: 404, message: 'Footy id not found'})
+      }
 
       const player = await PlayerRepository.create(playerData);
 
@@ -20,12 +26,26 @@ import { Request, Response, NextFunction } from 'express';
     }
   }
 
-  async readAll(req: Request, res: Response, next: NextFunction) {
+  async readAllByFooty(req: Request, res: Response, next: NextFunction) {
     try {
-      const players = await PlayerRepository.findAll();
+      const { id } = req.params
+      const players = await PlayerRepository.findAllByFooty(id);
 
-      console.count('readAll');
-      console.log(players);
+      res.locals = {
+        status: 200,
+        data: players,
+      };
+
+      return next();
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async readAllByFootyEvent(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params
+      const players = await PlayerRepository.findAllByFootyEvent(id);
 
       res.locals = {
         status: 200,
@@ -40,9 +60,9 @@ import { Request, Response, NextFunction } from 'express';
 
   async read(req: Request, res: Response, next: NextFunction) {
     try {
-      const { playerId } = req.params;
+      const { id } = req.params;
 
-      const player = await PlayerRepository.findById(playerId);
+      const player = await PlayerRepository.findById(id);
 
       if (!player) {
         return next({
@@ -64,17 +84,10 @@ import { Request, Response, NextFunction } from 'express';
 
   async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const { playerId } = req.params;
+      const { id } = req.params;
       const playerData = req.body;
 
-      const player = await PlayerRepository.update(playerId, playerData);
-
-      if (!player) {
-        return next({
-          status: 404,
-          message: 'Player not found',
-        });
-      }
+      const player = await PlayerRepository.update(id, playerData);
 
       res.locals = {
         status: 200,
@@ -90,16 +103,9 @@ import { Request, Response, NextFunction } from 'express';
   
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const { playerId } = req.params;
+      const { id } = req.params;
 
-      const player = await PlayerRepository.delete(playerId);
-
-      if (!player) {
-        return next({
-          status: 404,
-          message: 'Player no found'
-        });
-      }
+      await PlayerRepository.delete(id);
 
       res.locals = {
         status: 200,

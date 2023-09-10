@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { PlayerController } from '../controllers';
+import { FootyController, PlayerController } from '../controllers';
 import auth from '../middlewares/auth';
 
 const playerRouter = Router();
@@ -9,26 +9,25 @@ playerRouter.route('/')
     PlayerController.create,
   );
 
-playerRouter.route('/')
+playerRouter.route('/:id')
   .get(
-    PlayerController.readAll,
+    FootyController.read,
+    PlayerController.readAllByFooty,
   );
 
 playerRouter.route('/:id')
  .get(
     PlayerController.read,
  )
-
-playerRouter.route('/:id')
-  .patch(
-    [auth],
-    PlayerController.update,
-  );
-
-playerRouter.route('/:id')
-  .delete(
-    [auth], 
-    PlayerController.delete,
-  );
+ .patch(
+  [auth],
+  PlayerController.read,
+  PlayerController.update,
+)
+.delete(
+  [auth],
+  PlayerController.read,
+  PlayerController.delete,
+);
 
 export default playerRouter;

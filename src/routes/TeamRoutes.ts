@@ -12,17 +12,15 @@ teamRoutes.route('/')
 teamRoutes.route('/:id')
   .get(
     TeamController.read,
-  );
-
-teamRoutes.route('/:id')
+  )
   .patch(
     [auth],
+    TeamController.read,
     TeamController.update,
-  );
-
-teamRoutes.route('/:id')
+  )
   .delete(
     [auth],
+    TeamController.read,
     TeamController.delete,
   );
 
