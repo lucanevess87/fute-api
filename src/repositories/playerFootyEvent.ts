@@ -49,13 +49,43 @@ class PlayerFootyEventRepository {
     }
 
     async addVictory(footy_event_id: string, player_id: string, team_id: string): Promise<PlayerFootyEvent> {
-        const playerFootyEvent = await prisma.playerFootyEvent.update({
+        // Encontre o jogador correspondente pelo player_id e o evento de pelada pelo footy_event_id
+        const playerFootyEvent = await prisma.playerFootyEvent.findUnique({
             where: { footy_event_id_player_id: { footy_event_id, player_id } },
-            data: { victories: { increment: 1 } }, // Incrementa o número de vitórias
+            include: {
+                player: true,
+                footyEvent: true,
+            },
         });
-        return playerFootyEvent;
+
+        if (!playerFootyEvent) {
+            throw new Error('PlayerFootyEvent não encontrado');
+        }
+
+        // Determine a qual time o jogador pertence com base no team_id
+        const playerTeam = await prisma.team.findUnique({
+            where: { id: team_id },
+        });
+
+        if (!playerTeam) {
+            throw new Error('Time não encontrado');
+        }
+
+        // Incrementar as vitórias do jogador e do time
+        const updatedPlayerFootyEvent = await prisma.playerFootyEvent.update({
+            where: { footy_event_id_player_id: { footy_event_id, player_id } },
+            data: {
+                victories: (playerFootyEvent.victories || 0) + 1, // Incrementar as vitórias do jogador
+                team: {
+                    update: {
+                        victories: (playerTeam.victories || 0) + 1, // Incrementar as vitórias do time
+                    },
+                },
+            },
+        });
+
+        return updatedPlayerFootyEvent;
     }
 }
-
 
 export default new PlayerFootyEventRepository();
