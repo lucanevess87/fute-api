@@ -74,6 +74,7 @@ model PlayerFootyEvent {
   team_id        String
   goals          Int?
   assists        Int?
+  victories      Int?
   team           Team       @relation(fields: [team_id], references: [id])
   footyEvent     FootyEvent @relation(fields: [footy_event_id], references: [id])
   player         Player     @relation(fields: [player_id], references: [id])

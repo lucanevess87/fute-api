@@ -31,6 +31,31 @@ class PlayerFootyEventRepository {
         const playerFootyEvents = await prisma.playerFootyEvent.findMany();
         return playerFootyEvents;
     }
+
+    async addGoals(footy_event_id: string, player_id: string, goals: number): Promise<PlayerFootyEvent> {
+        const playerFootyEvent = await prisma.playerFootyEvent.update({
+            where: { footy_event_id_player_id: { footy_event_id, player_id } },
+            data: { goals: { increment: goals } }, // Incrementa o número de gols
+        });
+        return playerFootyEvent;
+    }
+
+    async addAssists(footy_event_id: string, player_id: string, assists: number): Promise<PlayerFootyEvent> {
+        const playerFootyEvent = await prisma.playerFootyEvent.update({
+            where: { footy_event_id_player_id: { footy_event_id, player_id } },
+            data: { assists: { increment: assists } }, // Incrementa o número de assistências
+        });
+        return playerFootyEvent;
+    }
+
+    async addVictory(footy_event_id: string, player_id: string, team_id: string): Promise<PlayerFootyEvent> {
+        const playerFootyEvent = await prisma.playerFootyEvent.update({
+            where: { footy_event_id_player_id: { footy_event_id, player_id } },
+            data: { victories: { increment: 1 } }, // Incrementa o número de vitórias
+        });
+        return playerFootyEvent;
+    }
 }
+
 
 export default new PlayerFootyEventRepository();
