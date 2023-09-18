@@ -36,9 +36,11 @@ model FootyEvent {
   id         String   @id @default(uuid())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  start_hour DateTime
+  end_hour   DateTime
   footy_id   String
   teams      Team[]
-  Footy      Footy    @relation(fields: [footy_id], references: [id])
+  footy      Footy    @relation(fields: [footy_id], references: [id])
 
   @@map("footy_event")
 }

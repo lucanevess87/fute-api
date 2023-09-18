@@ -2,12 +2,18 @@ import { NextFunction, Request, Response } from 'express';
 import { DrawTeamsParams, GroupedEvent, GroupedTeam, Team } from 'src/types/FootyEventTypes';
 import { FootyEventRepository, FootyRepository } from '../repositories';
 
+
+// create
+// read all by footy
+// read by footy eventId
+// delete
+
 class FootyEventController {
     async create(req: Request, res: Response, next: NextFunction) {
         try {
-            const eventData = req.body;
+            const { footy_id, players: allPlayers, players_per_team, num_of_teams, start_hour, end_hour} = req.body;
 
-            const footyId = await FootyRepository.findById(eventData.footyId);
+            const footyId = await FootyRepository.findById(footy_id);
 
             if(!footyId) {
                 return next({
@@ -50,14 +56,14 @@ class FootyEventController {
             };
 
             const sortedTeams = drawTeams({
-                players: eventData.players,
-                playersPerTeam: eventData.playersPerTeam,
-                teamCount: eventData.teamCount
+                players: allPlayers,
+                playersPerTeam: players_per_team,
+                teamCount: num_of_teams
             })
 
             console.log(sortedTeams)
 
-            const event = await FootyEventRepository.create(eventData);
+            const event = await FootyEventRepository.create({start_hour, end_hour, footy: {connect: footy_id} });
 
             res.locals = {
                 status: 200,
