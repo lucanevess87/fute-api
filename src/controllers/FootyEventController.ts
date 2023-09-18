@@ -16,6 +16,13 @@ class FootyEventController {
                 })
             }
 
+            // 1. footy ID exists
+            // 2. Create footy event
+            // 3. Create teams
+            // 4. Create missing players
+            // 5. Draw players
+            // 5. Create team players
+
             const drawTeams = ({players, teamCount, playersPerTeam} : DrawTeamsParams): Team[] => {
                 const sortedPlayers = [...players].sort((a, b) => b.stars - a.stars);
               

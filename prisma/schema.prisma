@@ -33,52 +33,49 @@ model Footy {
 }
 
 model FootyEvent {
-  id               String             @id @default(uuid())
-  created_at       DateTime           @default(now())
-  updated_at       DateTime           @updatedAt
-  footy_id         String
-  Footy            Footy              @relation(fields: [footy_id], references: [id])
-  playerFootyEvent PlayerFootyEvent[]
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  footy_id   String
+  teams      Team[]
+  Footy      Footy    @relation(fields: [footy_id], references: [id])
 
   @@map("footy_event")
 }
 
 model Team {
-  id               String             @id @default(uuid())
-  created_at       DateTime           @default(now())
-  updated_at       DateTime           @updatedAt
-  name             String
-  victories        Int
-  playerFootyEvent PlayerFootyEvent[]
+  id           String       @id @default(uuid())
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+  name         String
+  footyEventId String
+  victories    Int
+  teamPlayer   TeamPlayer[]
+  footyEvent   FootyEvent?  @relation(fields: [footyEventId], references: [id])
 
   @@map("team")
 }
 
-model Player {
-  id               String             @id @default(uuid())
-  created_at       DateTime           @default(now())
-  updated_at       DateTime           @updatedAt
-  footy_id         String
-  name             String
-  stars            Int
-  type             PlayerType
-  playerFootyEvent PlayerFootyEvent[]
-  footy            Footy              @relation(fields: [footy_id], references: [id])
-
-  @@map("player")
+model TeamPlayer {
+  id       String @id @default(uuid())
+  teamId   String
+  playerId String
+  goals    Int?
+  assists  Int?
+  team     Team   @relation(fields: [teamId], references: [id])
+  player   Player @relation(fields: [playerId], references: [id])
 }
 
-model PlayerFootyEvent {
-  footy_event_id String
-  player_id      String
-  team_id        String
-  goals          Int?
-  assists        Int?
-  team           Team       @relation(fields: [team_id], references: [id])
-  footyEvent     FootyEvent @relation(fields: [footy_event_id], references: [id])
-  player         Player     @relation(fields: [player_id], references: [id])
+model Player {
+  id         String       @id @default(uuid())
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+  footy_id   String
+  name       String
+  stars      Int
+  type       PlayerType
+  footy      Footy        @relation(fields: [footy_id], references: [id])
+  teamPlayer TeamPlayer[]
 
-  @@unique([footy_event_id, player_id])
-  @@index([team_id], name: "idx_team_id")
-  @@map("player_footy_event")
+  @@map("player")
 }
