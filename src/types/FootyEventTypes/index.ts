@@ -1,28 +1,30 @@
-import { FootyEvent, Player } from "@prisma/client";
+import { FootyEvent, Player } from '@prisma/client';
 
 type GroupedPlayer = {
-    player: Player;
-    assists: number;
-    goals: number;
-  };
+  player: Player;
+  assists: number;
+  goals: number;
+};
 
 export type GroupedTeam = {
-    id: string;
-    name: string;
-    victories: number;
-    players: GroupedPlayer[];
-  };
+  id: string;
+  name: string;
+  victories: number;
+  players: GroupedPlayer[];
+};
 
 export type GroupedEvent = Omit<FootyEvent, 'playerFootyEvent'> & {
-    teams: GroupedTeam[];
+  teams: GroupedTeam[];
 };
 
 export type Team = {
-    players: Player[];
+  name: string;
+  footyEventId: string;
+  victories: number;
+  players: any[];
 };
 
 export type DrawTeamsParams = {
-    players: Player[];
-    teamCount: number;
-    playersPerTeam: number;
-}
+  players: any[];
+  playersPerTeam: number;
+};
