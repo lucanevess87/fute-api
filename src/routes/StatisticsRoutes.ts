@@ -3,9 +3,9 @@ import { StatisticsController } from '../controllers';
 
 const StatisticsRouter = Router();
 
-StatisticsRouter.route('/footy').get(StatisticsController.footyStatistics);
+StatisticsRouter.route('/footy/:footyId').get(StatisticsController.footyStatistics);
 
-StatisticsRouter.route('/footy-event').get(
+StatisticsRouter.route('/footy-event/:footyEventId').get(
   StatisticsController.footyEventStatistics,
 );
 
