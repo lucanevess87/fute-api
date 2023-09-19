@@ -104,9 +104,13 @@ class FootyController {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const { data } = req.body;
+      const data  = req.body;
 
-      const dataValidated = UpdateFootySchema.safeParse({...data, start_hour: new Date(data.start_hour), end_hour: new Date(data.end_hour)})
+      const dataValidated = UpdateFootySchema.safeParse({
+        ...data, 
+        start_hour: new Date(data.start_hour), 
+        end_hour: new Date(data.end_hour)
+      })
 
       if (!dataValidated.success) {
         return next({
