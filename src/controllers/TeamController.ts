@@ -3,120 +3,101 @@ import teamRepository from '@repositories/teamRepository';
 import { FootyEventRepository } from '@repositories/index';
 
 class TeamController {
-    async create(req: Request, res: Response, next: NextFunction) {
-        try {
-            const teamData = req.body;
-            const footyEvent = await FootyEventRepository.findById(teamData.footyEventId);
+  async create(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { footyEventId } = req.body;
 
-            if(!footyEvent) {
-                return next({status: 404, message: 'Footy event id not found'})
-            }
+      const footyEvent = await FootyEventRepository.findById(footyEventId);
 
-            const team = await teamRepository.create(teamData);
+      if (!footyEvent) {
+        return next({ status: 404, message: 'Pelada não encontrada.' });
+      }
 
-            res.locals = {
-                status: 201,
-                message: "Time criado com sucesso",
-                data: team
-            }
+      const team = await teamRepository.create(req.body);
 
-            return next();
-        } catch (error) {
-            return next({status: 400, error: 'Dados inválidos' });
-        }
+      res.locals = {
+        status: 201,
+        message: 'Time criado com sucesso.',
+        data: team,
+      };
+
+      return next();
+    } catch (error) {
+      return next(error);
     }
+  }
 
-    async read(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { id } = req.params;
-            const team = await teamRepository.findById(id);
+  async read(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const team = await teamRepository.findById(id);
 
-            if (!team) {
-                return next({ status: 404, error: 'Time não encontrado.' });
-            }
+      if (!team) {
+        return next({ status: 404, error: 'Time não encontrado.' });
+      }
 
-            const response = {
-                id: team.id,
-                name: team.name,
-                victories: team.victories,
-                footy_event_id: team.playerFootyEvent[0].footyEvent.id,
-                players: team.playerFootyEvent.map((playerFootyEvent) => ({
-                    id: playerFootyEvent.player.id,
-                    name: playerFootyEvent.player.name,
-                    footy_id: playerFootyEvent.player.footy_id,
-                    starts: playerFootyEvent.player.starts,
-                    type: playerFootyEvent.player.type,
-                    created_at: playerFootyEvent.player.created_at,
-                    updated_at: playerFootyEvent.player.updated_at,
-                })),
-            };
+      res.locals = {
+        status: 200,
+        data: team,
+      };
 
-            res.locals = {
-                status: 200,
-                message: "",
-                data: response,
-            }
-
-            return next();
-        } catch (error) {
-            return next({status: 500, error: 'Erro ao buscar time.' });
-        }
+      return next();
+    } catch (error) {
+      return next(error);
     }
+  }
 
-    async readAll(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { eventId } = req.params;
-            const team = await teamRepository.findAll(eventId);
+  async readAllByFootyEvent(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const teams = await teamRepository.findAllByFootyEvent(id);
 
-            if (!team) {
-                return next({status: 404, error: 'Time não encontrado.' });
-            }
+      res.locals = {
+        status: 200,
+        data: teams,
+      };
 
-            res.locals = {
-                status: 200,
-                message: "",
-                data: team
-            }
-
-            return next();
-        } catch (error) {
-            return next({status: 500, error: 'Erro ao buscar time.' });
-        }
+      return next();
+    } catch (error) {
+      return next();
     }
+  }
 
-    async update(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { id } = req.params;
-            const teamData = req.body;
-            const updatedTeam = await teamRepository.update(id, teamData);
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const teamData = req.body;
 
-            res.locals = {
-                status: 200,
-                message: "Time atualizado com sucesso",
-                data: updatedTeam
-            }
+      const updatedTeam = await teamRepository.update(id, teamData);
 
-            return next(updatedTeam);
-        } catch (error) {
-            return next({status: 500, error: 'Erro ao atualizar time.' });
-        }
+      res.locals = {
+        status: 200,
+        message: 'Time atualizado com sucesso.',
+        data: updatedTeam,
+      };
+
+      return next(updatedTeam);
+    } catch (error) {
+      return next();
     }
+  }
 
-    async delete(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { id } = req.params;
-            await teamRepository.delete(id);
+  async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
 
-            res.locals = {
-                status: 200,
-                message: "Time deletado com sucesso",
-            }
+      await teamRepository.delete(id);
 
-            return next();
-        } catch (error) {
-            return next({status: 500, error: 'Erro ao excluir time.' });
-        }
+      res.locals = {
+        status: 200,
+        message: 'Time deletado com sucesso.',
+      };
+
+      return next();
+    } catch (error) {
+      return next(error);
     }
+  }
 }
 
 export default new TeamController();

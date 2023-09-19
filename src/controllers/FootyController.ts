@@ -13,16 +13,16 @@ class FootyController {
         data.username,
       );
 
-      const existsFootyWithEmail = await FootyRepository.findByEmail(
-        data.email,
-      );
-
       if (existsFootyWithUsername) {
         return next({
           status: 400,
           message: 'This username is already registered',
         });
       }
+
+      const existsFootyWithEmail = await FootyRepository.findByEmail(
+        data.email,
+      );
 
       if (existsFootyWithEmail) {
         return next({
@@ -51,7 +51,7 @@ class FootyController {
 
       res.locals = {
         status: 201,
-        message: 'Footy criado com sucesso.',
+        message: 'Pelada criada com sucesso.',
         data: footy,
       };
 
@@ -64,6 +64,7 @@ class FootyController {
   async readAll(req: Request, res: Response, next: NextFunction) {
     try {
       const { name } = req.params;
+
       const footies = await FootyRepository.findAll({
         name: name as string | undefined,
       });

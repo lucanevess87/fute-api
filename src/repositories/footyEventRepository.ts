@@ -7,7 +7,7 @@ class FootyEventRepository {
     return event;
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<any> {
     const event = await prisma.footyEvent.findUnique({
       where: { id },
       include: {
@@ -42,10 +42,25 @@ class FootyEventRepository {
   }
 
   async findAll(footyId: string): Promise<FootyEvent[]> {
-    const events = await prisma.footyEvent.findMany({
+    const footyEvents = await prisma.footyEvent.findMany({
       where: { footy_id: footyId },
+      include: {
+        footy: true,
+        teams: {
+          include: {
+            footyEvent: true,
+            teamPlayer: {
+              include: {
+                player: true,
+                team: true,
+              },
+            },
+          },
+        },
+      },
     });
-    return events;
+
+    return footyEvents;
   }
 }
 

@@ -1,22 +1,29 @@
 import { FootyRepository, PlayerRepository } from '@repositories/index';
 import { Request, Response, NextFunction } from 'express';
 
- class PlayerController {
+class PlayerController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const playerData = req.body;
+      const { footy: footyId } = req.body;
 
-      const footy = await FootyRepository.findById(playerData.footyId);
+      const footy = await FootyRepository.findById(footyId);
 
-      if(!footy) {
-          return next({status: 404, message: 'Footy id not found'})
+      if (!footy) {
+        return next({ status: 404, message: 'Pelada não encontrada.' });
       }
 
-      const player = await PlayerRepository.create(playerData);
+      const player = await PlayerRepository.create({
+        ...req.body,
+        footy: {
+          connect: {
+            id: footyId,
+          },
+        },
+      });
 
       res.locals = {
         status: 201,
-        message: 'Player created',
+        message: 'Jogador criado com sucesso.',
         data: player,
       };
 
@@ -28,24 +35,9 @@ import { Request, Response, NextFunction } from 'express';
 
   async readAllByFooty(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params
+      const { id } = req.params;
+
       const players = await PlayerRepository.findAllByFooty(id);
-
-      res.locals = {
-        status: 200,
-        data: players,
-      };
-
-      return next();
-    } catch (error) {
-      return next(error);
-    }
-  }
-
-  async readAllByFootyEvent(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { id } = req.params
-      const players = await PlayerRepository.findAllByFootyEvent(id);
 
       res.locals = {
         status: 200,
@@ -67,7 +59,7 @@ import { Request, Response, NextFunction } from 'express';
       if (!player) {
         return next({
           status: 404,
-          message: 'Player not found'        
+          message: 'Jogador não encontrado.',
         });
       }
 
@@ -91,8 +83,8 @@ import { Request, Response, NextFunction } from 'express';
 
       res.locals = {
         status: 200,
-        data: player, 
-        message: 'Player updated',
+        data: player,
+        message: 'Jogador atualizado com sucesso.',
       };
 
       return next();
@@ -100,7 +92,7 @@ import { Request, Response, NextFunction } from 'express';
       return next(error);
     }
   }
-  
+
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
@@ -109,7 +101,7 @@ import { Request, Response, NextFunction } from 'express';
 
       res.locals = {
         status: 200,
-        message: 'Player deleted'
+        message: 'Jogador deletado com sucesso.',
       };
 
       return next();
@@ -119,4 +111,4 @@ import { Request, Response, NextFunction } from 'express';
   }
 }
 
- export default new PlayerController();
+export default new PlayerController();

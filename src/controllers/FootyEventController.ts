@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { GroupedEvent, GroupedTeam } from 'src/types/FootyEventTypes';
+import { Team } from '@prisma/client';
 import {
   FootyEventRepository,
   FootyRepository,
@@ -7,11 +7,6 @@ import {
   PlayerRepository,
   TeamPlayerRepository,
 } from '../repositories';
-
-// create
-// read all by footy
-// read by footy eventId
-// delete
 
 class FootyEventController {
   async create(req: Request, res: Response, next: NextFunction) {
@@ -30,12 +25,12 @@ class FootyEventController {
       if (!footy) {
         return next({
           error: 400,
-          message: 'Footy não encontrada',
+          message: 'Pelada não encontrada.',
         });
       }
 
       const footyEvent = await FootyEventRepository.create({
-        footy: { connect: footyId },
+        footy: { connect: { id: footyId } },
         start_hour: new Date(startHour),
         end_hour: new Date(endHour),
       });
@@ -143,14 +138,44 @@ class FootyEventController {
         footyEvent.id,
       );
 
+      const {
+        footy: createdFooty,
+        teams: createdTeams,
+        ...createdFootyEventData
+      } = createdFootyEvent;
+
+      const formattedTeams = createdTeams.map((team) => {
+        const { teamPlayer: teamPlayers, ...teamData } = team;
+        const footyEventPlayers = teamPlayers.map((teamPlayer) => {
+          const { goals, assists, player } = teamPlayer;
+
+          return {
+            ...player,
+            goals: goals ?? 0,
+            assists: assists ?? 0,
+          };
+        });
+
+        return {
+          ...teamData,
+          players: footyEventPlayers,
+        };
+      });
+
       res.locals = {
         status: 200,
         message: 'Jogo criado com sucesso.',
-        data: createdFootyEvent,
+        data: {
+          ...createdFootyEventData,
+          footy: createdFooty,
+          teams: formattedTeams,
+        },
       };
 
       return next();
     } catch (error) {
+      console.log(error);
+
       return next(error);
     }
   }
@@ -159,11 +184,11 @@ class FootyEventController {
     try {
       const { id } = req.params;
 
-      const events = await FootyEventRepository.findAll(id);
+      const footyEvents = await FootyEventRepository.findAll(id);
 
       res.locals = {
         status: 200,
-        data: events,
+        data: footyEvents,
       };
 
       return next();
@@ -173,52 +198,21 @@ class FootyEventController {
   }
 
   async read(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.params;
-
     try {
-      const event = await FootyEventRepository.findById(id);
+      const { id } = req.params;
 
-      if (!event) {
+      const footyEvent = await FootyEventRepository.findById(id);
+
+      if (!footyEvent) {
         return next({
           status: 400,
-          error: 'Evento específico de pelada não encontrado.',
+          error: 'Evento não encontrado.',
         });
       }
 
-      const groupedEvent: GroupedEvent = {
-        ...event,
-        teams: event.players.reduce<GroupedTeam[]>((acc, pfe) => {
-          const teamId = pfe.team.id;
-          const existingTeam = acc.find((team) => team.id === teamId);
-
-          if (existingTeam) {
-            existingTeam.players.push({
-              player: pfe.player,
-              assists: pfe.assists ?? 0,
-              goals: pfe.goals ?? 0,
-            });
-          } else {
-            acc.push({
-              id: teamId,
-              name: pfe.team.name,
-              victories: 0,
-              players: [
-                {
-                  player: pfe.player,
-                  assists: pfe.assists ?? 0,
-                  goals: pfe.goals ?? 0,
-                },
-              ],
-            });
-          }
-
-          return acc;
-        }, []),
-      };
-
       res.locals = {
         status: 200,
-        data: groupedEvent,
+        data: footyEvent,
       };
 
       return next();
@@ -228,16 +222,25 @@ class FootyEventController {
   }
 
   async update(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.params;
-    const eventData = req.body;
-
     try {
-      const updatedEvent = await FootyEventRepository.update(id, eventData);
+      const { id } = req.params;
+
+      const { start_hour, end_hour, footy_id } = req.body;
+
+      const updatedEvent = await FootyEventRepository.update(id, {
+        end_hour,
+        start_hour,
+        footy: {
+          connect: {
+            id: footy_id,
+          },
+        },
+      });
 
       res.locals = {
         status: 200,
         data: updatedEvent,
-        message: 'Evento autalizado',
+        message: 'Evento atualizado com sucesso.',
       };
 
       return next();
@@ -249,7 +252,14 @@ class FootyEventController {
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
+
       await FootyEventRepository.delete(id);
+
+      res.locals = {
+        status: 200,
+        message: 'Evento deletado com sucesso.',
+      };
+
       return next();
     } catch (error) {
       return next(error);

@@ -7,9 +7,12 @@ const eventRouter = Router();
 eventRouter.route('/').post(FootyEventController.create);
 
 eventRouter
+  .route('/all/:id')
+  .get([auth], FootyController.read, FootyEventController.readAllByFooty);
+
+eventRouter
   .route('/:id')
-  .get(FootyController.read, FootyEventController.readAllByFooty)
-  .get(FootyEventController.read)
+  .get([auth], FootyEventController.read)
   .patch([auth], FootyEventController.read, FootyEventController.update)
   .delete([auth], FootyEventController.read, FootyEventController.delete);
 
