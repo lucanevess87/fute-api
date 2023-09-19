@@ -4,6 +4,7 @@ import AuthRouter from './AuthRoutes';
 import FootyEventRoutes from './FootyEventRoutes';
 import PlayerRoutes from './PlayerRoutes';
 import TeamRoutes from './TeamRoutes';
+import StatisticsRoutes from './StatisticsRoutes';
 
 const router = Router();
 
@@ -12,6 +13,7 @@ router.use('/auth', AuthRouter);
 router.use('/footy-event', FootyEventRoutes);
 router.use('/team', TeamRoutes);
 router.use('/player', PlayerRoutes);
+router.use('/statistics', StatisticsRoutes);
 router.route('/').get((req, res) => {
   res.send('Hello World!');
 });
