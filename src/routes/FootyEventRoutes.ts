@@ -4,29 +4,13 @@ import { FootyController, FootyEventController } from '../controllers';
 
 const eventRouter = Router();
 
-eventRouter.route('/')
-    .post(
-        [auth],
-        FootyEventController.create,
-    );
+eventRouter.route('/').post(FootyEventController.create);
 
-eventRouter.route('/:id')
-    .get(
-        FootyController.read,
-        FootyEventController.readAllByFooty,
-    )
-    .get(
-        FootyEventController.read,
-    )
-    .patch(
-        [auth],
-        FootyEventController.read,
-        FootyEventController.update,
-    )
-    .delete(
-        [auth],
-        FootyEventController.read,
-        FootyEventController.delete,
-    );
+eventRouter
+  .route('/:id')
+  .get(FootyController.read, FootyEventController.readAllByFooty)
+  .get(FootyEventController.read)
+  .patch([auth], FootyEventController.read, FootyEventController.update)
+  .delete([auth], FootyEventController.read, FootyEventController.delete);
 
 export default eventRouter;
