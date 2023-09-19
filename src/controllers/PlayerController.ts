@@ -6,7 +6,7 @@ import { Request, Response, NextFunction } from 'express';
     try {
       const playerData = req.body;
 
-      const footy = await FootyRepository.findById(playerData.footyId);
+      const footy = await FootyRepository.findById(playerData.footy_id);
 
       if(!footy) {
           return next({status: 404, message: 'Footy id not found'})

@@ -2,6 +2,10 @@ import { NextFunction, Request, Response } from 'express';
 import teamRepository from '@repositories/teamRepository';
 import { FootyEventRepository } from '@repositories/index';
 
+// ONLY:
+// 1.READ
+// 2.UPDATE
+
 class TeamController {
     async create(req: Request, res: Response, next: NextFunction) {
         try {
@@ -44,7 +48,7 @@ class TeamController {
                     id: playerFootyEvent.player.id,
                     name: playerFootyEvent.player.name,
                     footy_id: playerFootyEvent.player.footy_id,
-                    starts: playerFootyEvent.player.starts,
+                    starts: playerFootyEvent.player.stars,
                     type: playerFootyEvent.player.type,
                     created_at: playerFootyEvent.player.created_at,
                     updated_at: playerFootyEvent.player.updated_at,

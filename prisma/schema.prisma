@@ -9,8 +9,8 @@ generator client {
 }
 
 enum PlayerType {
-  mensalist
-  diarist
+  monthly
+  daily
 }
 
 model Footy {
