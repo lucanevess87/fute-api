@@ -32,7 +32,7 @@ class LoginController {
       }
 
       const tokenRepository = new TokenRepository();
-      const accessToken = tokenRepository.generateAccessToken(footy.id, '60s');
+      const accessToken = tokenRepository.generateAccessToken(footy.id, '24h');
       const refreshToken = tokenRepository.generateRefreshToken(footy.id, '5d');
 
       setCookie(res, 'refresh_token', refreshToken);

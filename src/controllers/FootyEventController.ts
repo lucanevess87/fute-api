@@ -235,8 +235,8 @@ class FootyEventController {
 
       if (!footyEvent) {
         return next({
-          status: 400,
-          error: 'Evento não encontrado.',
+          status: 404,
+          message: 'Evento não encontrado.',
         });
       }
 
@@ -275,6 +275,7 @@ class FootyEventController {
 
       return next();
     } catch (error) {
+      console.log(error)
       return next(error);
     }
   }
