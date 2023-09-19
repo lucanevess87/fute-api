@@ -12,6 +12,7 @@ class TeamRepository {
       where: { id },
       include: {
         footyEvent: true,
+        teamPlayer: true,
       },
     });
 

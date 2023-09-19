@@ -39,26 +39,10 @@ class TeamController {
                 return next({ status: 404, error: 'Time não encontrado.' });
             }
 
-            const response = {
-                id: team.id,
-                name: team.name,
-                victories: team.victories,
-                footy_event_id: team.playerFootyEvent[0].footyEvent.id,
-                players: team.playerFootyEvent.map((playerFootyEvent) => ({
-                    id: playerFootyEvent.player.id,
-                    name: playerFootyEvent.player.name,
-                    footy_id: playerFootyEvent.player.footy_id,
-                    starts: playerFootyEvent.player.stars,
-                    type: playerFootyEvent.player.type,
-                    created_at: playerFootyEvent.player.created_at,
-                    updated_at: playerFootyEvent.player.updated_at,
-                })),
-            };
-
             res.locals = {
                 status: 200,
                 message: "",
-                data: response,
+                data: team,
             }
 
             return next();

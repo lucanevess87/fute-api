@@ -42,22 +42,6 @@ import { Request, Response, NextFunction } from 'express';
     }
   }
 
-  async readAllByFootyEvent(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { id } = req.params
-      const players = await PlayerRepository.findAllByFootyEvent(id);
-
-      res.locals = {
-        status: 200,
-        data: players,
-      };
-
-      return next();
-    } catch (error) {
-      return next(error);
-    }
-  }
-
   async read(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;

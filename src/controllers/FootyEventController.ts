@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { GroupedEvent, GroupedTeam } from 'src/types/FootyEventTypes';
+import { Player, Team } from '@prisma/client';
 import {
   FootyEventRepository,
   FootyRepository,
@@ -35,7 +35,7 @@ class FootyEventController {
       }
 
       const footyEvent = await FootyEventRepository.create({
-        footy: { connect: footyId },
+        footy: { connect: {id: footyId} },
         start_hour: new Date(startHour),
         end_hour: new Date(endHour),
       });
@@ -60,7 +60,7 @@ class FootyEventController {
       );
 
       const { existingPlayers, playersToCreate } = players.reduce(
-        (acc, player) => {
+        (acc: {existingPlayers: Player[]; playersToCreate: Player[] }, player: Player) => {
           if (player.id) acc.existingPlayers.push(player);
           else acc.playersToCreate.push(player);
 
@@ -115,9 +115,9 @@ class FootyEventController {
       const sortedTeams = balanceTeams();
 
       await Promise.all(
-        sortedTeams.map(async (team) => {
+        sortedTeams.map(async (team: Team & {players: Player[]}) => {
           const teamPlayers = await Promise.all(
-            team.players.map(async (player) => {
+            team.players.map(async (player: Player) => {
               const teamPlayer = await TeamPlayerRepository.create({
                 player: {
                   connect: {
@@ -151,6 +151,7 @@ class FootyEventController {
 
       return next();
     } catch (error) {
+      console.log(error)
       return next(error);
     }
   }
@@ -185,40 +186,9 @@ class FootyEventController {
         });
       }
 
-      const groupedEvent: GroupedEvent = {
-        ...event,
-        teams: event.players.reduce<GroupedTeam[]>((acc, pfe) => {
-          const teamId = pfe.team.id;
-          const existingTeam = acc.find((team) => team.id === teamId);
-
-          if (existingTeam) {
-            existingTeam.players.push({
-              player: pfe.player,
-              assists: pfe.assists ?? 0,
-              goals: pfe.goals ?? 0,
-            });
-          } else {
-            acc.push({
-              id: teamId,
-              name: pfe.team.name,
-              victories: 0,
-              players: [
-                {
-                  player: pfe.player,
-                  assists: pfe.assists ?? 0,
-                  goals: pfe.goals ?? 0,
-                },
-              ],
-            });
-          }
-
-          return acc;
-        }, []),
-      };
-
       res.locals = {
         status: 200,
-        data: groupedEvent,
+        data: event,
       };
 
       return next();
