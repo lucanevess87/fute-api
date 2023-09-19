@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { Team } from '@prisma/client';
 import {
   FootyEventRepository,
   FootyRepository,
@@ -186,9 +185,41 @@ class FootyEventController {
 
       const footyEvents = await FootyEventRepository.findAll(id);
 
+      const formattedFootyEvents = footyEvents.map((footyEvent) => {
+        const {
+          footy: createdFooty,
+          teams: createdTeams,
+          ...footyEventData
+        } = footyEvent;
+
+        const formattedTeams = createdTeams.map((team) => {
+          const { teamPlayer: teamPlayers, ...teamData } = team;
+          const footyEventPlayers = teamPlayers.map((teamPlayer) => {
+            const { goals, assists, player } = teamPlayer;
+
+            return {
+              ...player,
+              goals: goals ?? 0,
+              assists: assists ?? 0,
+            };
+          });
+
+          return {
+            ...teamData,
+            players: footyEventPlayers,
+          };
+        });
+
+        return {
+          ...footyEventData,
+          footy: createdFooty,
+          teams: formattedTeams,
+        };
+      });
+
       res.locals = {
         status: 200,
-        data: footyEvents,
+        data: formattedFootyEvents,
       };
 
       return next();
@@ -210,9 +241,37 @@ class FootyEventController {
         });
       }
 
+      const {
+        footy: createdFooty,
+        teams: createdTeams,
+        ...footyEventData
+      } = footyEvent;
+
+      const formattedTeams = createdTeams.map((team) => {
+        const { teamPlayer: teamPlayers, ...teamData } = team;
+        const footyEventPlayers = teamPlayers.map((teamPlayer) => {
+          const { goals, assists, player } = teamPlayer;
+
+          return {
+            ...player,
+            goals: goals ?? 0,
+            assists: assists ?? 0,
+          };
+        });
+
+        return {
+          ...teamData,
+          players: footyEventPlayers,
+        };
+      });
+
       res.locals = {
         status: 200,
-        data: footyEvent,
+        data: {
+          ...footyEventData,
+          footy: createdFooty,
+          teams: formattedTeams,
+        },
       };
 
       return next();
@@ -237,9 +296,37 @@ class FootyEventController {
         },
       });
 
+      const {
+        footy: createdFooty,
+        teams: createdTeams,
+        ...updatedFootyEventData
+      } = updatedEvent;
+
+      const formattedTeams = createdTeams.map((team) => {
+        const { teamPlayer: teamPlayers, ...teamData } = team;
+        const footyEventPlayers = teamPlayers.map((teamPlayer) => {
+          const { goals, assists, player } = teamPlayer;
+
+          return {
+            ...player,
+            goals: goals ?? 0,
+            assists: assists ?? 0,
+          };
+        });
+
+        return {
+          ...teamData,
+          players: footyEventPlayers,
+        };
+      });
+
       res.locals = {
         status: 200,
-        data: updatedEvent,
+        data: {
+          ...updatedFootyEventData,
+          footy: createdFooty,
+          teams: formattedTeams,
+        },
         message: 'Evento atualizado com sucesso.',
       };
 

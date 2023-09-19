@@ -28,10 +28,7 @@ class FootyEventRepository {
     return event;
   }
 
-  async update(
-    id: string,
-    data: Prisma.FootyEventUpdateInput,
-  ): Promise<FootyEvent> {
+  async update(id: string, data: Prisma.FootyEventUpdateInput): Promise<any> {
     const event = await prisma.footyEvent.update({ where: { id }, data });
     return event;
   }
@@ -41,7 +38,7 @@ class FootyEventRepository {
     return event;
   }
 
-  async findAll(footyId: string): Promise<FootyEvent[]> {
+  async findAll(footyId: string): Promise<any> {
     const footyEvents = await prisma.footyEvent.findMany({
       where: { footy_id: footyId },
       include: {
