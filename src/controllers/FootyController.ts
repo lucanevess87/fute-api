@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { hash } from 'bcryptjs';
 import { Footy } from '@prisma/client';
-import { FootySchema } from '@DTOs/Footy';
+import { FootySchema, UpdateFootySchema } from '@DTOs/Footy';
 import { FootyRepository } from '../repositories';
 
 class FootyController {
@@ -33,6 +33,8 @@ class FootyController {
 
       const dataWithHashedPassword: Footy = {
         ...data,
+        end_hour: new Date(data.end_hour),
+        start_hour: new Date(data.start_hour),
         password: await hash(data.password, 6),
       };
 
@@ -102,9 +104,9 @@ class FootyController {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const data = req.body;
+      const { data } = req.body;
 
-      const dataValidated = FootySchema.safeParse(data)
+      const dataValidated = UpdateFootySchema.safeParse({...data, start_hour: new Date(data.start_hour), end_hour: new Date(data.end_hour)})
 
       if (!dataValidated.success) {
         return next({
@@ -113,7 +115,15 @@ class FootyController {
         });
       }
 
-      const footy = await FootyRepository.update(id, data);
+      const footy = await FootyRepository.update(id, {
+        name: data.name,
+        location: data.location,
+        start_hour:data.start_hour,
+        end_hour: data.end_hour,
+        players_per_team: data.players_per_team,
+        num_of_teams: data.num_of_teams,
+        players: data.players,
+      });
       
       res.locals = {
         status: 200,
