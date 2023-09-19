@@ -8,11 +8,6 @@ import {
   TeamPlayerRepository,
 } from '../repositories';
 
-// create
-// read all by footy
-// read by footy eventId
-// delete
-
 class FootyEventController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
@@ -30,12 +25,12 @@ class FootyEventController {
       if (!footy) {
         return next({
           error: 400,
-          message: 'Footy não encontrada',
+          message: 'Pelada não encontrada.',
         });
       }
 
       const footyEvent = await FootyEventRepository.create({
-        footy: { connect: {id: footyId} },
+        footy: { connect: { id: footyId } },
         start_hour: new Date(startHour),
         end_hour: new Date(endHour),
       });
@@ -143,15 +138,42 @@ class FootyEventController {
         footyEvent.id,
       );
 
+      const {
+        footy: createdFooty,
+        teams: createdTeams,
+        ...createdFootyEventData
+      } = createdFootyEvent;
+
+      const formattedTeams = createdTeams.map((team: any) => {
+        const { teamPlayer: teamPlayers, ...teamData } = team;
+        const footyEventPlayers = teamPlayers.map((teamPlayer: any) => {
+          const { goals, assists, player } = teamPlayer;
+
+          return {
+            ...player,
+            goals: goals ?? 0,
+            assists: assists ?? 0,
+          };
+        });
+
+        return {
+          ...teamData,
+          players: footyEventPlayers,
+        };
+      });
+
       res.locals = {
         status: 200,
         message: 'Jogo criado com sucesso.',
-        data: createdFootyEvent,
+        data: {
+          ...createdFootyEventData,
+          footy: createdFooty,
+          teams: formattedTeams,
+        },
       };
 
       return next();
     } catch (error) {
-      console.log(error)
       return next(error);
     }
   }
@@ -160,11 +182,43 @@ class FootyEventController {
     try {
       const { id } = req.params;
 
-      const events = await FootyEventRepository.findAll(id);
+      const footyEvents = await FootyEventRepository.findAll(id);
+
+      const formattedFootyEvents = footyEvents.map((footyEvent: any) => {
+        const {
+          footy: createdFooty,
+          teams: createdTeams,
+          ...footyEventData
+        } = footyEvent;
+
+        const formattedTeams = createdTeams.map((team: any) => {
+          const { teamPlayer: teamPlayers, ...teamData } = team;
+          const footyEventPlayers = teamPlayers.map((teamPlayer: any) => {
+            const { goals, assists, player } = teamPlayer;
+
+            return {
+              ...player,
+              goals: goals ?? 0,
+              assists: assists ?? 0,
+            };
+          });
+
+          return {
+            ...teamData,
+            players: footyEventPlayers,
+          };
+        });
+
+        return {
+          ...footyEventData,
+          footy: createdFooty,
+          teams: formattedTeams,
+        };
+      });
 
       res.locals = {
         status: 200,
-        data: events,
+        data: formattedFootyEvents,
       };
 
       return next();
@@ -174,21 +228,49 @@ class FootyEventController {
   }
 
   async read(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.params;
-
     try {
-      const event = await FootyEventRepository.findById(id);
+      const { id } = req.params;
 
-      if (!event) {
+      const footyEvent = await FootyEventRepository.findById(id);
+
+      if (!footyEvent) {
         return next({
           status: 400,
-          error: 'Evento específico de pelada não encontrado.',
+          error: 'Evento não encontrado.',
         });
       }
 
+      const {
+        footy: createdFooty,
+        teams: createdTeams,
+        ...footyEventData
+      } = footyEvent;
+
+      const formattedTeams = createdTeams.map((team: any) => {
+        const { teamPlayer: teamPlayers, ...teamData } = team;
+        const footyEventPlayers = teamPlayers.map((teamPlayer: any) => {
+          const { goals, assists, player } = teamPlayer;
+
+          return {
+            ...player,
+            goals: goals ?? 0,
+            assists: assists ?? 0,
+          };
+        });
+
+        return {
+          ...teamData,
+          players: footyEventPlayers,
+        };
+      });
+
       res.locals = {
         status: 200,
-        data: event,
+        data: {
+          ...footyEventData,
+          footy: createdFooty,
+          teams: formattedTeams,
+        },
       };
 
       return next();
@@ -198,16 +280,53 @@ class FootyEventController {
   }
 
   async update(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.params;
-    const eventData = req.body;
-
     try {
-      const updatedEvent = await FootyEventRepository.update(id, eventData);
+      const { id } = req.params;
+
+      const { start_hour, end_hour, footy_id } = req.body;
+
+      const updatedEvent = await FootyEventRepository.update(id, {
+        end_hour,
+        start_hour,
+        footy: {
+          connect: {
+            id: footy_id,
+          },
+        },
+      });
+
+      const {
+        footy: createdFooty,
+        teams: createdTeams,
+        ...updatedFootyEventData
+      } = updatedEvent;
+
+      const formattedTeams = createdTeams.map((team: any) => {
+        const { teamPlayer: teamPlayers, ...teamData } = team;
+        const footyEventPlayers = teamPlayers.map((teamPlayer: any) => {
+          const { goals, assists, player } = teamPlayer;
+
+          return {
+            ...player,
+            goals: goals ?? 0,
+            assists: assists ?? 0,
+          };
+        });
+
+        return {
+          ...teamData,
+          players: footyEventPlayers,
+        };
+      });
 
       res.locals = {
         status: 200,
-        data: updatedEvent,
-        message: 'Evento autalizado',
+        data: {
+          ...updatedFootyEventData,
+          footy: createdFooty,
+          teams: formattedTeams,
+        },
+        message: 'Evento atualizado com sucesso.',
       };
 
       return next();
@@ -219,7 +338,14 @@ class FootyEventController {
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
+
       await FootyEventRepository.delete(id);
+
+      res.locals = {
+        status: 200,
+        message: 'Evento deletado com sucesso.',
+      };
+
       return next();
     } catch (error) {
       return next(error);

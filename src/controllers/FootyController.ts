@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { hash } from 'bcryptjs';
+import bcryptjs from 'bcryptjs';
 import { Footy } from '@prisma/client';
 import { FootySchema, UpdateFootySchema } from '@DTOs/Footy';
 import { FootyRepository } from '../repositories';
@@ -13,16 +13,16 @@ class FootyController {
         data.username,
       );
 
-      const existsFootyWithEmail = await FootyRepository.findByEmail(
-        data.email,
-      )
-
       if (existsFootyWithUsername) {
         return next({
           status: 400,
           message: 'This username is already registered',
         });
       }
+
+      const existsFootyWithEmail = await FootyRepository.findByEmail(
+        data.email,
+      );
 
       if (existsFootyWithEmail) {
         return next({
@@ -35,10 +35,10 @@ class FootyController {
         ...data,
         end_hour: new Date(data.end_hour),
         start_hour: new Date(data.start_hour),
-        password: await hash(data.password, 6),
+        password: await bcryptjs.hash(data.password, 6),
       };
 
-      const dataValidated = FootySchema.safeParse(dataWithHashedPassword)
+      const dataValidated = FootySchema.safeParse(dataWithHashedPassword);
 
       if (!dataValidated.success) {
         return next({
@@ -47,13 +47,13 @@ class FootyController {
         });
       }
 
-    const footy = await FootyRepository.create(dataWithHashedPassword);
+      const footy = await FootyRepository.create(dataWithHashedPassword);
 
-    res.locals = {
-      status: 201,
-      message: "Footy criado com sucesso.",
-      data: footy,
-    };
+      res.locals = {
+        status: 201,
+        message: 'Pelada criada com sucesso.',
+        data: footy,
+      };
 
       return next();
     } catch (error) {
@@ -64,7 +64,10 @@ class FootyController {
   async readAll(req: Request, res: Response, next: NextFunction) {
     try {
       const { name } = req.params;
-      const footies = await FootyRepository.findAll({name: name as string | undefined});
+
+      const footies = await FootyRepository.findAll({
+        name: name as string | undefined,
+      });
 
       res.locals = {
         status: 200,
@@ -104,13 +107,13 @@ class FootyController {
   async update(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const data  = req.body;
+      const data = req.body;
 
       const dataValidated = UpdateFootySchema.safeParse({
-        ...data, 
-        start_hour: new Date(data.start_hour), 
-        end_hour: new Date(data.end_hour)
-      })
+        ...data,
+        start_hour: new Date(data.start_hour),
+        end_hour: new Date(data.end_hour),
+      });
 
       if (!dataValidated.success) {
         return next({
@@ -122,13 +125,13 @@ class FootyController {
       const footy = await FootyRepository.update(id, {
         name: data.name,
         location: data.location,
-        start_hour:data.start_hour,
+        start_hour: data.start_hour,
         end_hour: data.end_hour,
         players_per_team: data.players_per_team,
         num_of_teams: data.num_of_teams,
         players: data.players,
       });
-      
+
       res.locals = {
         status: 200,
         data: footy,

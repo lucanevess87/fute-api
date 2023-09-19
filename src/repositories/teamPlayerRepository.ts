@@ -3,13 +3,25 @@ import { Prisma, Player, Team, TeamPlayer } from '@prisma/client';
 
 class TeamPlayerRepository {
   async create(data: Prisma.TeamPlayerCreateInput): Promise<TeamPlayer> {
-    const teamPlayer = await prisma.teamPlayer.create({ data });
+    const teamPlayer = await prisma.teamPlayer.create({
+      data,
+      include: {
+        player: true,
+        team: true,
+      },
+    });
 
     return teamPlayer;
   }
 
   async findById(id: string): Promise<TeamPlayer | null> {
-    const teamPlayer = await prisma.teamPlayer.findUnique({ where: { id } });
+    const teamPlayer = await prisma.teamPlayer.findUnique({
+      where: { id },
+      include: {
+        player: true,
+        team: true,
+      },
+    });
 
     return teamPlayer;
   }
@@ -18,7 +30,14 @@ class TeamPlayerRepository {
     id: string,
     data: Prisma.TeamPlayerUpdateInput,
   ): Promise<TeamPlayer> {
-    const teamPlayer = await prisma.teamPlayer.update({ where: { id }, data });
+    const teamPlayer = await prisma.teamPlayer.update({
+      where: { id },
+      include: {
+        player: true,
+        team: true,
+      },
+      data,
+    });
 
     return teamPlayer;
   }
@@ -27,14 +46,6 @@ class TeamPlayerRepository {
     const teamPlayer = await prisma.teamPlayer.delete({ where: { id } });
 
     return teamPlayer;
-  }
-
-  async findAllByFooty(footyId: string) {
-    const teamPlayers = await prisma.player.findMany({
-      where: { footy_id: footyId },
-    });
-
-    return teamPlayers;
   }
 
   async findByFootyId(
@@ -50,6 +61,7 @@ class TeamPlayerRepository {
       },
       include: {
         player: true,
+        team: true,
       },
     });
 

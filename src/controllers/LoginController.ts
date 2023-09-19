@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { compare } from 'bcryptjs';
+import bcryptjs from 'bcryptjs';
 
 import {
   FootyRepository,
@@ -22,7 +22,7 @@ class LoginController {
         });
       }
 
-      const checkPassword = await compare(password, footy.password);
+      const checkPassword = await bcryptjs.compare(password, footy.password);
 
       if (!checkPassword) {
         return next({
@@ -37,7 +37,7 @@ class LoginController {
 
       setCookie(res, 'refresh_token', refreshToken);
 
-      const { password: _,  ...loggedFooty} = footy;
+      const { password: _, ...loggedFooty } = footy;
 
       res.locals = {
         status: 200,

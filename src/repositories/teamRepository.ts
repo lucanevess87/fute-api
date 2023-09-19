@@ -4,6 +4,7 @@ import { Prisma, Team } from '@prisma/client';
 class TeamRepository {
   async create(data: Prisma.TeamCreateInput): Promise<Team> {
     const team = await prisma.team.create({ data });
+
     return team;
   }
 
@@ -11,8 +12,21 @@ class TeamRepository {
     const team = await prisma.team.findUnique({
       where: { id },
       include: {
-        footyEvent: true,
-        teamPlayer: true,
+        footyEvent: {
+          include: {
+            footy: true,
+            teams: {
+              include: {
+                teamPlayer: {
+                  include: {
+                    team: true,
+                    player: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
 
@@ -27,13 +41,31 @@ class TeamRepository {
 
   async delete(id: string): Promise<Team> {
     const team = await prisma.team.delete({ where: { id } });
+
     return team;
   }
 
-  async findAll(eventId: string): Promise<Team[]> {
+  async findAllByFootyEvent(footyEventId: string): Promise<Team[]> {
     const teams = await prisma.team.findMany({
       where: {
-        footyEventId: eventId,
+        footyEventId,
+      },
+      include: {
+        footyEvent: {
+          include: {
+            footy: true,
+            teams: {
+              include: {
+                teamPlayer: {
+                  include: {
+                    team: true,
+                    player: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
     return teams;
