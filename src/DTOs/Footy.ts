@@ -8,20 +8,13 @@ const PlayerSchema = z.object({
   id: z.string(),
   name: z.string(),
   starts: z.number().int(),
-  type: z.enum(["mensalist", "diarist"]),
-});
-
-const FootyEventSchema = z.object({
-  id: z.string(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  footy_id: z.string(),
+  type: z.enum(["monthly", "daily"]),
 });
 
 export const FootySchema = z.object({
-  id: z.string(),
-  created_at: z.date(),
-  updated_at: z.date(),
+  id: z.string().optional(),
+  created_at: z.date().optional(),
+  updated_at: z.date().optional(),
   email: z.string().email({ message: "O email deve ser um email válido." }),
   username: z.string().regex(/^\S*$/, { message: usernameValidationMessage }).trim(),
   name: z.string({ description: "O nome é obrigatório." }),
@@ -32,7 +25,16 @@ export const FootySchema = z.object({
   players_per_team: z.number().int().min(0, { message: playersPerTeamValidationMessage }).optional(),
   num_of_teams: z.number().int().min(0, { message: numOfTeamsValidationMessage }).optional(),
   players: z.array(PlayerSchema).optional(),
-  footy_event: z.array(FootyEventSchema).optional(),
+});
+
+export const UpdateFootySchema = z.object({
+  name: z.string({ description: "O nome é obrigatório." }),
+  location: z.string({ description: "A localização é obrigatória." }),
+  start_hour: z.date().nullable().optional(),
+  end_hour: z.date().nullable().optional(),
+  players_per_team: z.number().int().min(0, { message: playersPerTeamValidationMessage }).optional(),
+  num_of_teams: z.number().int().min(0, { message: numOfTeamsValidationMessage }).optional(),
+  players: z.array(PlayerSchema).optional(),
 });
 
 
