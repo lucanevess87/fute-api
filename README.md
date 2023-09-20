@@ -11,6 +11,8 @@ No clickup é possível encontrar: atividades do projeto, backlog do produto com
 Deploy back: http://146.190.14.27:3001/
 Deploy front: https://fute-9r7ikn7mc-lucanevess87.vercel.app/admin/437b299f-38c7-4ae9-9e69-2d740569e08a
 
+Protótipo no Figma: https://www.figma.com/file/KDZtOh7ZuawPIIFCehKPao/Mockup?type=design&node-id=0-1&mode=design&t=dIQ07St9PRyyl2q5-0
+
 # Time:
   - Guilherme Ribeiro (grcc) - Gerente do projeto *Líder
   - Luca Neves (lnb2) - Líder tećnico
