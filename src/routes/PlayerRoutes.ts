@@ -9,7 +9,7 @@ playerRouter.route('/')
     PlayerController.create,
   );
 
-playerRouter.route('/:id')
+playerRouter.route('/all/:id')
   .get(
     FootyController.read,
     PlayerController.readAllByFooty,

@@ -1,22 +1,31 @@
 import { FootyRepository, PlayerRepository } from '@repositories/index';
 import { Request, Response, NextFunction } from 'express';
 
+type PlayerBody = {
+  name: string;
+  stars: number;
+  footy_id: string;
+  type: 'monthly' | 'daily'
+}
+
 class PlayerController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const { footy: footyId } = req.body;
+      const { name, stars, footy_id, type }: PlayerBody = req.body;
 
-      const footy = await FootyRepository.findById(footyId);
+      const footy = await FootyRepository.findById(footy_id);
 
       if (!footy) {
         return next({ status: 404, message: 'Pelada não encontrada.' });
       }
 
       const player = await PlayerRepository.create({
-        ...req.body,
+        name,
+        stars,
+        type,
         footy: {
           connect: {
-            id: footyId,
+            id: footy_id,
           },
         },
       });

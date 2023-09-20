@@ -1,16 +1,26 @@
 import { Request, Response, NextFunction } from 'express';
 import bcryptjs from 'bcryptjs';
-import { Footy } from '@prisma/client';
 import { FootySchema, UpdateFootySchema } from '@DTOs/Footy';
-import { FootyRepository } from '../repositories';
+import { FootyRepository, PlayerRepository } from '../repositories';
 
 class FootyController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const data: Footy = req.body;
+      const {
+        email,
+        username,
+        name,
+        password,
+        location,
+        start_hour,
+        end_hour,
+        players_per_team,
+        num_of_teams,
+        players,
+    } = req.body;
 
       const existsFootyWithUsername = await FootyRepository.findByUsername(
-        data.username,
+        username,
       );
 
       if (existsFootyWithUsername) {
@@ -21,7 +31,7 @@ class FootyController {
       }
 
       const existsFootyWithEmail = await FootyRepository.findByEmail(
-        data.email,
+        email,
       );
 
       if (existsFootyWithEmail) {
@@ -31,11 +41,16 @@ class FootyController {
         });
       }
 
-      const dataWithHashedPassword: Footy = {
-        ...data,
-        end_hour: new Date(data.end_hour),
-        start_hour: new Date(data.start_hour),
-        password: await bcryptjs.hash(data.password, 6),
+      const dataWithHashedPassword = {
+        email,
+        username,
+        name,
+        location,
+        players_per_team,
+        num_of_teams,
+        end_hour: new Date(end_hour),
+        start_hour: new Date(start_hour),
+        password: await bcryptjs.hash(password, 6),
       };
 
       const dataValidated = FootySchema.safeParse(dataWithHashedPassword);
@@ -49,10 +64,27 @@ class FootyController {
 
       const footy = await FootyRepository.create(dataWithHashedPassword);
 
+      const newPlayers = await Promise.all(
+        players.map(async (player: any) => {
+          const newPlayer = await PlayerRepository.create({
+            footy: {
+              connect: {
+                id: footy.id,
+              },
+            },
+            name: player.name,
+            stars: 0,
+            type: 'monthly',
+          });
+
+          return newPlayer;
+        }),
+      );
+
       res.locals = {
         status: 201,
         message: 'Pelada criada com sucesso.',
-        data: footy,
+        data: {...footy, players: newPlayers},
       };
 
       return next();

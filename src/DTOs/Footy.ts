@@ -10,7 +10,7 @@ const numOfTeamsValidationMessage =
 const PlayerSchema = z.object({
   id: z.string(),
   name: z.string(),
-  starts: z.number().int(),
+  stars: z.number().int(),
   type: z.enum(['monthly', 'daily']),
 });
 
