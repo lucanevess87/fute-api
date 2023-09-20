@@ -8,6 +8,9 @@ Acessos:
   - Clickup https://app.clickup.com/9010156395/v/s/90100401129
 No clickup é possível encontrar: atividades do projeto, backlog do produto com histórias do usuário, link para o protótipo inicial no figma, design e arquitetura do software, documentação dos testes criados, modelo ER, especificações técnicas e documento de postmortem do primeiro ciclo do projeto
 
+Deploy back: http://146.190.14.27:3001/
+Deploy front: https://fute-9r7ikn7mc-lucanevess87.vercel.app/admin/437b299f-38c7-4ae9-9e69-2d740569e08a
+
 # Time:
   - Guilherme Ribeiro (grcc) - Gerente do projeto *Líder
   - Luca Neves (lnb2) - Líder tećnico
