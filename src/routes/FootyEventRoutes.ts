@@ -8,11 +8,11 @@ eventRouter.route('/').post(FootyEventController.create);
 
 eventRouter
   .route('/all/:id')
-  .get([auth], FootyController.read, FootyEventController.readAllByFooty);
+  .get( FootyController.read, FootyEventController.readAllByFooty);
 
 eventRouter
   .route('/:id')
-  .get([auth], FootyEventController.read)
+  .get( FootyEventController.read)
   .patch([auth], FootyEventController.read, FootyEventController.update)
   .delete([auth], FootyEventController.read, FootyEventController.delete);
 

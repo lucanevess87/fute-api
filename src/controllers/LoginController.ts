@@ -32,19 +32,20 @@ class LoginController {
       }
 
       const tokenRepository = new TokenRepository();
-      const accessToken = tokenRepository.generateAccessToken(footy.id, '24h');
+      const access_token = tokenRepository.generateAccessToken(footy.id, '24h');
       const refreshToken = tokenRepository.generateRefreshToken(footy.id, '5d');
 
       setCookie(res, 'refresh_token', refreshToken);
 
-      const { password: _, ...loggedFooty } = footy;
+      const { password: _, ...user } = footy;
 
       res.locals = {
         status: 200,
         message: 'Logado com successo.',
         data: {
-          loggedFooty,
-          accessToken,
+          id: user.id,
+          user,
+          access_token,
         },
       };
 
