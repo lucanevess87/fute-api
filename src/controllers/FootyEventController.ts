@@ -249,10 +249,11 @@ class FootyEventController {
       const formattedTeams = createdTeams.map((team: any) => {
         const { teamPlayer: teamPlayers, ...teamData } = team;
         const footyEventPlayers = teamPlayers.map((teamPlayer: any) => {
-          const { goals, assists, player } = teamPlayer;
+          const { goals, assists, player, id: teamPlayerId } = teamPlayer;
 
           return {
             ...player,
+            teamPlayerId,
             goals: goals ?? 0,
             assists: assists ?? 0,
           };
